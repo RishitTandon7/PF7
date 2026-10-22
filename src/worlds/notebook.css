@@ -1,0 +1,84 @@
+.w-notebook { --paper: #f6f1e4; --blue: #1d3f9c; --red: #d1301f; --line: #b9cbe6; background: #2f2219; position: relative; }
+.w-notebook::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.07) 0 3px, transparent 3px 11px), repeating-linear-gradient(88deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 17px); pointer-events: none; }
+.w-notebook::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 14px; background: linear-gradient(135deg, #14110d 25%, transparent 25%) 0 0 / 22px 14px, linear-gradient(225deg, #14110d 25%, transparent 25%) 0 0 / 22px 14px; transform: translateY(-1px); z-index: 25; }
+.nb-bar { --bar-bg: #f6f1e4; --bar-fg: #1d3f9c; --bar-line: #d1301f; font-family: 'Courier Prime', monospace; }
+.nb-desk { position: relative; padding: 56px 4vw 100px; display: flex; justify-content: center; }
+.coffee-ring { position: absolute; right: 6vw; top: 8%; width: 110px; height: 110px; border-radius: 50%; border: 7px solid rgba(60, 30, 10, 0.35); filter: blur(0.6px); transform: scaleY(0.92) rotate(10deg); }
+.pencil { position: absolute; left: 2vw; bottom: 6%; width: 200px; height: 12px; background: linear-gradient(90deg, #e6a52a 0 78%, #f0c9a0 78% 90%, #333 90%); transform: rotate(-24deg); border-radius: 2px; box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.35); }
+
+.ed-sheet { position: relative; width: min(1120px, 100%); background: linear-gradient(90deg, transparent 56px, rgba(209, 48, 31, 0.55) 56px 58px, transparent 58px), repeating-linear-gradient(var(--paper) 0 35px, var(--line) 35px 36px) 0 40px, var(--paper); color: var(--blue); padding: 34px 40px 36px 84px; box-shadow: 12px 14px 0 rgba(0, 0, 0, 0.35); border-radius: 4px; overflow: hidden; }
+.ed-sheet > * { position: relative; }
+.print { font-family: 'Courier Prime', monospace; font-size: 11px; color: #8a8576; text-transform: uppercase; letter-spacing: 0.1em; }
+.ed-head h2 { font: 400 clamp(40px, 6vw, 84px) 'Permanent Marker', cursive; line-height: 1.1; }
+.hand { font: 500 clamp(22px, 2.4vw, 30px) 'Caveat', cursive; }
+
+.ed-grid { display: grid; grid-template-columns: 270px 240px minmax(0, 1fr); gap: 34px; align-items: start; margin-top: 26px; min-height: 330px; }
+
+/* student card */
+.ed-id { position: relative; width: 250px; height: 320px; padding: 0; border: 0; background: none; perspective: 1000px; cursor: pointer; text-align: left; color: inherit; transform: rotate(-3deg); }
+.ed-id .face { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 6px; padding: 18px 18px 12px; border: 3px solid #16140f; border-radius: 12px; box-shadow: 6px 8px 0 rgba(0, 0, 0, 0.3); backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform 0.7s cubic-bezier(0.3, 1.2, 0.4, 1); }
+.ed-id .front { background: #fff; color: #16140f; }
+.ed-id .front::before { content: ''; position: absolute; left: 0; right: 0; top: 0; width: auto; margin: 0; height: 52px; background: #d1301f; border-radius: 9px 9px 0 0; }
+.ed-id .front em { position: relative; font: 800 14px/1 var(--mono); letter-spacing: 0.14em; color: #fff; font-style: normal; margin-top: -4px; white-space: nowrap; }
+.avatar { margin: 18px 0 4px; width: 78px; height: 78px; border-radius: 50%; background: #1d3f9c; color: #fff; display: grid; place-items: center; font: 400 34px 'Permanent Marker', cursive; font-style: normal; border: 3px solid #16140f; }
+.ed-id .front b { font: 400 30px 'Permanent Marker', cursive; line-height: 1; }
+.ed-id .front span { font: 700 12px var(--mono); }
+.ed-id small { margin-top: auto; font: 10.5px var(--mono); opacity: 0.6; }
+.ed-id .back { background: #16140f; color: #f4efe6; transform: rotateY(180deg); }
+.ed-id .back em { font: 800 13px var(--mono); font-style: normal; letter-spacing: 0.18em; text-transform: uppercase; color: #ffb000; }
+.ed-id .back p { margin: 10px 0 0; display: flex; flex-direction: column; }
+.ed-id .back p b { font: 400 28px 'Permanent Marker', cursive; line-height: 1.1; }
+.ed-id .back p span { font: 700 12px var(--mono); color: #ff6b57; }
+.ed-id.flip .front { transform: rotateY(-180deg); }
+.ed-id.flip .back { transform: rotateY(0); }
+
+/* cgpa gauge */
+.ed-cgpa { position: relative; width: 240px; height: 240px; margin-top: 10px; }
+.ed-cgpa svg { width: 100%; height: 100%; }
+.ed-cgpa circle { fill: none; stroke-width: 14; }
+.ed-cgpa .track { stroke: rgba(29, 63, 156, 0.14); }
+.ed-cgpa .arc { stroke: #d1301f; stroke-linecap: round; }
+.ed-num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ed-num b { font: 400 76px 'Permanent Marker', cursive; line-height: 1; font-variant-numeric: tabular-nums; }
+.ed-num span { font: 700 12px var(--mono); color: #55616f; }
+.ed-stamp { position: absolute; right: -16px; bottom: 8px; border: 4px solid #d1301f; color: #d1301f; padding: 2px 10px; font: 400 22px/1 'Permanent Marker', cursive; text-transform: uppercase; text-align: center; opacity: 0; transform: rotate(-9deg); border-radius: 6px; background: rgba(246, 241, 228, 0.7); }
+
+/* index cards */
+.ed-cards { position: relative; min-height: 300px; }
+.ed-cards .print { position: absolute; right: 0; top: -4px; }
+.ed-card { position: absolute; width: 210px; padding: 22px 16px 14px; background: #fffbe8; border: 2px solid #16140f; box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.28); cursor: grab; touch-action: none; user-select: none; display: flex; flex-direction: column; gap: 2px; color: #16140f; background-image: repeating-linear-gradient(transparent 0 27px, #cfe0f2 27px 28px); }
+.ed-card.c0 { left: 0; top: 14px; transform: rotate(-4deg); }
+.ed-card.c1 { left: 24%; top: 160px; transform: rotate(3deg); background-color: #ffe8e2; }
+.ed-card:active { cursor: grabbing; }
+.ed-card .tape { position: absolute; top: -12px; left: 50%; width: 70px; height: 22px; margin-left: -35px; background: rgba(255, 230, 120, 0.8); transform: rotate(-2deg); border: 1px solid rgba(0, 0, 0, 0.1); }
+.ed-card b { font: 400 30px/1.05 'Permanent Marker', cursive; text-transform: lowercase; }
+.ed-card span { font: 700 10.5px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: #77705f; }
+.ed-card strong { font: 500 30px 'Caveat', cursive; color: var(--red); margin-top: 4px; }
+
+/* the path */
+.ed-path { position: relative; margin-top: 30px; height: 170px; }
+.ed-path svg { position: absolute; left: 0; right: 0; top: 24px; width: 100%; height: 80px; overflow: visible; }
+.ed-line { fill: none; stroke: var(--blue); stroke-width: 4; stroke-linecap: round; vector-effect: non-scaling-stroke; stroke-dasharray: 1; }
+.ed-path ol { list-style: none; margin: 0; padding: 0; display: flex; justify-content: space-between; position: relative; height: 100%; }
+.ed-stop { position: relative; width: 24%; text-align: center; padding-top: 80px; }
+.ed-walker { position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; border-radius: 50%; background: #d1301f; box-shadow: 0 0 0 5px rgba(209, 48, 31, 0.25); z-index: 3; pointer-events: none; }
+.ed-stop i { position: absolute; left: 50%; top: 54px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; background: var(--paper); border: 4px solid var(--blue); }
+.ed-stop.now i { background: var(--red); border-color: var(--red); box-shadow: 0 0 0 6px rgba(209, 48, 31, 0.2); }
+.ed-stop b { display: block; font: 400 26px 'Permanent Marker', cursive; line-height: 1; }
+.ed-stop span { display: block; font: 600 24px 'Caveat', cursive; line-height: 1; }
+.ed-stop small { font: 11px var(--mono); color: #77705f; }
+
+@media (max-width: 900px) {
+  .ed-sheet { padding: 24px 16px 26px 62px; background: linear-gradient(90deg, transparent 40px, rgba(209, 48, 31, 0.55) 40px 42px, transparent 42px), repeating-linear-gradient(var(--paper) 0 35px, var(--line) 35px 36px) 0 40px, var(--paper); }
+  .ed-grid { grid-template-columns: 1fr; justify-items: start; }
+  .ed-id { transform: rotate(-2deg); }
+  .ed-cards { width: 100%; min-height: 330px; }
+  .ed-card.c1 { left: 30%; top: 150px; }
+  .ed-path { height: auto; }
+  .ed-path svg, .ed-walker { display: none; }
+  .ed-path ol { flex-direction: column; gap: 4px; border-left: 4px dashed var(--blue); margin-left: 8px; }
+  .ed-stop { width: auto; text-align: left; padding: 0 0 12px 26px; }
+  .ed-stop i { left: -12px; top: 4px; margin-left: 0; }
+  .ed-stop b, .ed-stop span { display: inline; margin-right: 8px; }
+  .coffee-ring, .pencil { display: none; }
+}
