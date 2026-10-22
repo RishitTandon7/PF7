@@ -12,7 +12,7 @@ export function Lazy({ world }) {
     if (near && !Comp) world.load().then((m) => setComp(() => m.default))
   }, [near, Comp, world])
   return (
-    <div ref={ref} data-world={world.id} style={Comp ? undefined : { minHeight: world.minH }}>
+    <div ref={ref} data-world={world.id} style={Comp ? undefined : { minHeight: typeof window !== 'undefined' && window.innerWidth < 820 && world.minHm ? world.minHm : world.minH }}>
       {Comp ? <WorldCtx.Provider value={world}><Comp /></WorldCtx.Provider> : <div className="loading-world">loading {world.label}<span className="blink">_</span></div>}
     </div>
   )

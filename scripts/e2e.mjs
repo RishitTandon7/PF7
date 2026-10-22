@@ -70,8 +70,6 @@ await page.screenshot({ path: `${out}/05-viewsource.png` })
 await page.click('.win-src')
 
 // --- notebook flip
-await page.click('.nb-nav .go'); await page.waitForTimeout(2600)
-await page.screenshot({ path: `${out}/06-notebook-flipped.png` })
 
 // --- arcade
 await dock('arcade')

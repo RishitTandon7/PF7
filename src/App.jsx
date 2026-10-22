@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import MenuBar from './ui/MenuBar'
 import Dock from './ui/Dock'
 import Wipe from './ui/Wipe'
@@ -21,6 +22,21 @@ const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'Ar
 export default function App() {
   useEffect(() => {
     initScroll()
+
+    // page height changes as sections mount: keep every scroll-triggered animation measured against the real layout
+    let rt
+    const ro = new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => ScrollTrigger.refresh(), 250) })
+    ro.observe(document.body)
+
+    // warm up: fetch every section's code and the heavy textures while the browser is idle, so scrolling into a section never stalls on a download
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 400))
+    let alive = true
+    const warm = async () => {
+      await new Promise((r) => setTimeout(r, 2500))
+      for (const w of WORLDS.slice(1)) { if (!alive) return; await new Promise((r) => idle(r)); try { await w.load() } catch {} }
+      for (const u of ['/tex/earth.jpg', '/tex/earth_lights.png', '/media/lhonak-poster.jpg']) { const i = new Image(); i.src = u }
+    }
+    warm()
 
     // which world is crossing the middle of the screen
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && setActive(e.target.dataset.world)), { rootMargin: '-50% 0px -50% 0px' })
@@ -49,7 +65,7 @@ export default function App() {
     window.addEventListener('resize', dt)
     const off = on('devtools', () => unlock('devtools'))
 
-    return () => { io.disconnect(); mo.disconnect(); window.removeEventListener('keydown', kd); window.removeEventListener('resize', dt); off() }
+    return () => { alive = false; ro.disconnect(); clearTimeout(rt); io.disconnect(); mo.disconnect(); window.removeEventListener('keydown', kd); window.removeEventListener('resize', dt); off() }
   }, [])
 
   return (
