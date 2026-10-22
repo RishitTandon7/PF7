@@ -1,6 +1,6 @@
 .w-mission { --ph: #38ffb0; --amber: #ffb020; --red: #ff4d4d; background: #03100d; color: var(--ph); font-family: 'Share Tech Mono', var(--mono); position: relative; }
 .mc-bar { --bar-bg: #031a14; --bar-fg: #38ffb0; --bar-line: #0a3b2e; font-family: 'Share Tech Mono', monospace; }
-.mc-track { height: 260svh; position: relative; }
+.mc-track { height: 520svh; position: relative; }
 .mc-stick { position: sticky; top: calc(var(--menu-h) + 30px); height: calc(100svh - var(--menu-h) - 30px); overflow: hidden; background: radial-gradient(circle at 50% 40%, #07261d, #020a08 70%); }
 .mc-gl, .mc-gl > div { position: absolute; inset: 0; }
 .mc-gl canvas { width: 100%; height: 100%; display: block; }

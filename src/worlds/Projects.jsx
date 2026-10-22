@@ -59,6 +59,7 @@ function Project({ p, flip, open, onToggle, onVideo }) {
               <dt>what i built</dt><dd>{p.built}</dd>
               <dt>so what</dt><dd>{p.impact}</dd>
             </dl>
+            {p.photo && <figure className="p-photo"><img src={p.photo.src} alt={p.photo.alt} loading="lazy" decoding="async" /><figcaption>{p.photo.cap}</figcaption></figure>}
             <ul className="p-tech">{p.tech.map((t) => <li key={t}>{t}</li>)}</ul>
             <div className="p-links">
               {p.video && <button className="p-play" onClick={() => onVideo(p)}>▶ watch demo</button>}

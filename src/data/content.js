@@ -58,6 +58,7 @@ export const PROJECTS = [
     problem: 'in 2021 "smart glasses" was not a thing people wanted yet. nobody was building them, and your phone was still the only way to ask "what am i looking at?".',
     built: 'i started building my own smart glasses in 2021, the same idea as the meta ray-bans of today, before it was a product category. a first-person hud with detection boxes, labels and live captions, on a pair i put together myself.',
     impact: 'i was building a replica of what meta ships now, years before it was obvious. the demo below is the hud, move your cursor to look around.',
+    photo: { src: '/media/aisgr-v1.webp', alt: 'AISGR v1 smart glasses', cap: 'AISGR v1: the actual glasses. camera in the frame, battery in the arm, a physical power switch.' },
     tech: ['python', 'opencv', 'ml', 'embedded'],
     links: [{ t: 'github', u: 'https://github.com/RishitTandon7/A.I.S.G.R.' }],
   },

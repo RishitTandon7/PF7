@@ -326,10 +326,12 @@ export default function Mission() {
     }
     const vid = h.vid
     if (vid && vid.duration) {
+      // linear across the whole stretch (an ease made the middle race), and the picture follows with inertia so a fast flick can't teleport it
       const k = clamp((v - 0.3) / 0.4, 0, 1)
       vid.style.opacity = clamp((v - 0.26) / 0.05, 0, 1).toFixed(2)
-      const want = ease(k) * (vid.duration - 0.05)
-      if (!vid.seeking && Math.abs(vid.currentTime - want) > 0.03) vid.currentTime = want
+      const want = k * (vid.duration - 0.05)
+      h.vt = h.vt == null ? want : h.vt + (want - h.vt) * 0.14
+      if (vid.readyState >= 2 && !vid.seeking && Math.abs(vid.currentTime - h.vt) > 0.02) vid.currentTime = h.vt
     }
     h.coords.textContent = v < 0.3
       ? `ORBIT  ${lerp(8, v < 0.15 ? CHENNAI_LL[0] : 27.915, ease(v / 0.3)).toFixed(2)}N  ${lerp(-35, v < 0.15 ? CHENNAI_LL[1] : 88.183, ease(v / 0.3)).toFixed(2)}E  alt ${Math.round(lerp(22000, 3000, ease(v / 0.3)))}km`
@@ -359,7 +361,7 @@ export default function Mission() {
           <div className="mc-stick">
             {phone
               ? [1, 2, 3].map((n, i) => <img key={n} className="mc-still" ref={(e) => ((hud.current.stills ||= [])[i] = e)} src={`/media/lhonak-${n}.jpg`} alt="" decoding="async" />)
-              : <video className="mc-vid" ref={(e) => (hud.current.vid = e)} src="/media/lhonak-zoom.mp4" muted playsInline preload="auto" aria-hidden />}
+              : <video className="mc-vid" ref={(e) => (hud.current.vid = e)} src="/media/lhonak-zoom.mp4" poster="/media/lhonak-1.jpg" muted playsInline preload="auto" aria-hidden />}
             <GL className="mc-gl" camera={{ position: [0, 0, 3.6], fov: 38, near: 0.02, far: 80 }}>
               <fog attach="fog" args={['#06130f', 28, 80]} />
               <ambientLight intensity={0.9} />

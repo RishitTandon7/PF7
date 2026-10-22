@@ -34,6 +34,7 @@ export default function App() {
     const warm = async () => {
       await new Promise((r) => setTimeout(r, 2500))
       for (const w of WORLDS.slice(1)) { if (!alive) return; await new Promise((r) => idle(r)); try { await w.load() } catch {} }
+      if (!window.matchMedia('(hover: none)').matches) fetch('/media/lhonak-zoom.mp4').catch(() => {})
       for (const u of ['/tex/earth.jpg', '/tex/earth_lights.png', '/media/lhonak-poster.jpg']) { const i = new Image(); i.src = u }
     }
     warm()
