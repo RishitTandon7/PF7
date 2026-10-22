@@ -1,0 +1,1 @@
+import{n as e,t}from"./ScrollTrigger-wW5WQlLE.js";e.registerPlugin(t),window.matchMedia&&window.matchMedia(`(prefers-reduced-motion: reduce)`).matches||(e.from(`.pb-title`,{y:60,opacity:0,duration:1.2,ease:`power3.out`,delay:.1}),e.utils.toArray(`.pb-block`).forEach(t=>e.from(t,{y:50,opacity:0,duration:1,ease:`power3.out`,scrollTrigger:{trigger:t,start:`top 88%`,once:!0}})));
