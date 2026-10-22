@@ -216,6 +216,7 @@ function Radar({ active, p }) {
   const blips = useMemo(() => Array.from({ length: 9 }, (_, i) => ({ a: (i * 2.399) % 6.283, r: 0.25 + ((i * 0.37) % 0.65) })), [])
   const ref = useCanvas2D((g, w, h, t) => {
     const cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2 - 4
+    if (R <= 2) return // not laid out (hidden) - drawing an arc with a negative radius throws every single frame
     g.clearRect(0, 0, w, h)
     g.strokeStyle = 'rgba(56,255,176,.35)'; g.lineWidth = 1
     for (let i = 1; i <= 4; i++) { g.beginPath(); g.arc(cx, cy, (R * i) / 4, 0, 6.283); g.stroke() }
@@ -311,10 +312,10 @@ export default function Mission() {
     if (v > 0.8 && !h.sirened) { h.sirened = true; siren() } else if (v < 0.75) h.sirened = false
     h.flash.style.opacity = "0"
     const a = clamp((v - 0.84) / 0.12, 0, 1)
-    h.bar.style.transform = `scaleX(${1 - 0.4 * ease(a)})`
-    h.pct.textContent = '-' + Math.round(40 * ease(a)) + '%'
-    h.alerts.forEach((el, i) => el.classList.toggle('on', v >= ALERTS[i][0]))
-    h.alerts.forEach((el, i) => el.classList.toggle('hot', i >= 4 && v >= ALERTS[i][0]))
+    if (h.bar) h.bar.style.transform = `scaleX(${1 - 0.4 * ease(a)})` // (radar / latency panels aren't rendered on phones)
+    if (h.pct) h.pct.textContent = '-' + Math.round(40 * ease(a)) + '%'
+    h.alerts?.forEach((el, i) => el?.classList.toggle('on', v >= ALERTS[i][0]))
+    h.alerts?.forEach((el, i) => el?.classList.toggle('hot', i >= 4 && v >= ALERTS[i][0]))
     // the recording is scrubbed by scroll; fades in over the globe, out into the 3d terrain
     if (h.stills) {
       const o1 = clamp((v - 0.26) / 0.06, 0, 1) * (1 - clamp((v - 0.42) / 0.1, 0, 1))
@@ -374,7 +375,7 @@ export default function Mission() {
               <span>GLOF-WATCH</span><span ref={(e) => (hud.current.coords = e)}>ORBIT</span><span className="rec">● live demo</span>
             </header>
 
-            <aside className="mc-side">
+            {!phone && <aside className="mc-side">
               <div className="mc-panel">
                 <h4>radar</h4>
                 <Radar active={vis} p={P} />
@@ -389,7 +390,7 @@ export default function Mission() {
                 <div className="lat after"><span>after</span><i ref={(e) => (hud.current.bar = e)} /></div>
                 <b className="pct" ref={(e) => (hud.current.pct = e)}>-0%</b>
               </div>
-            </aside>
+            </aside>}
 
             <div className="mc-role" ref={(e) => (hud.current.card = e)}>
               <small>{NIDM.org} · research intern</small>
