@@ -10,6 +10,8 @@ import { useVisible } from '../lib/hooks'
 import './forge.css'
 
 const GOAL = 10000
+// on a phone the 3d scenes never capture the finger (orbit controls did, so the page couldn't be scrolled over them). they auto-rotate instead.
+const COARSE = typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches
 const GREENS = ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353']
 const fmt = (n) => n.toLocaleString('en-US')
 
@@ -90,7 +92,7 @@ function Skyline({ days, onHover }) {
         <boxGeometry args={[1, 1, 1]} /><meshStandardMaterial roughness={0.6} />
       </instancedMesh>
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[34, 8]} /><meshStandardMaterial color="#0d1117" /></mesh>
-      <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.5} enableDamping minPolarAngle={0.45} maxPolarAngle={1.45} target={[0, 0.5, 0]} />
+      <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.5} enableDamping minPolarAngle={0.45} maxPolarAngle={1.45} target={[0, 0.5, 0]} enabled={!COARSE} />
     </>
   )
 }
@@ -133,7 +135,7 @@ function Galaxy({ repos, lang, onHover }) {
           <meshStandardMaterial color={colorOf(n.r.language)} emissive={colorOf(n.r.language)} emissiveIntensity={0.9} roughness={0.4} />
         </mesh>
       ))}
-      <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.35} enableDamping minPolarAngle={0.3} maxPolarAngle={1.5} />
+      <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.35} enableDamping minPolarAngle={0.3} maxPolarAngle={1.5} enabled={!COARSE} />
     </>
   )
 }
@@ -237,7 +239,7 @@ export default function Forge() {
           <GL camera={{ position: [0, 13, 31], fov: 38 }}>
             <Skyline days={d.days} onHover={setDay} />
           </GL>
-          <p className="fg-cap">the skyline — drag to orbit · hover a day · taller = more commits</p>
+          <p className="fg-cap">the skyline — {typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches ? 'auto-rotating · tap a day' : 'drag to orbit · hover a day'} · taller = more commits</p>
         </div>
 
         <div className="fg-mid">
@@ -246,7 +248,7 @@ export default function Forge() {
             <GL camera={{ position: [0, 9, 14], fov: 40 }}>
               <Galaxy repos={d.repos} lang={lang} onHover={setRepo} />
             </GL>
-            <p className="fg-cap">size = activity · color = language · click a planet to open the repo</p>
+            <p className="fg-cap">size = activity · color = language · {typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches ? 'auto-rotating · tap a planet to open the repo' : 'click a planet to open the repo'}</p>
           </div>
           <div className="fg-ringwrap">
             <h3>language ring</h3>

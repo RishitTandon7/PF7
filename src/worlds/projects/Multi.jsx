@@ -43,7 +43,7 @@ function Scene({ sel, setSel, sim }) {
         <mesh position={[0, 0, 0.6]} rotation={[Math.PI / 2, 0, 0]}><coneGeometry args={[0.07, 0.3, 8]} /><meshBasicMaterial color="#4a90ff" /></mesh>
         <mesh position={[0, 0, 0.3]} rotation={[Math.PI / 2, 0, 0]}><cylinderGeometry args={[0.015, 0.015, 0.6]} /><meshBasicMaterial color="#4a90ff" /></mesh>
       </group>
-      <OrbitControls enablePan={false} enableZoom={false} minPolarAngle={0.5} maxPolarAngle={1.35} makeDefault />
+      <OrbitControls enablePan={false} enableZoom={false} minPolarAngle={0.5} maxPolarAngle={1.35} makeDefault enabled={!(typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches)} />
     </>
   )
 }

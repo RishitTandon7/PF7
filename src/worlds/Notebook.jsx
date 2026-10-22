@@ -53,6 +53,7 @@ export default function Notebook() {
 
   // the index cards can be picked up and moved around
   useEffect(() => {
+    if (!window.matchMedia('(hover: hover)').matches) return // on a phone the cards stay put so the page scrolls freely
     const d = Draggable.create('.ed-card', { type: 'x,y', bounds: root.current.querySelector('.ed-sheet'), edgeResistance: 0.8, onPress() { paper() }, zIndexBoost: true })
     return () => d.forEach((x) => x.kill())
   }, [])

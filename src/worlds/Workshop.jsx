@@ -105,12 +105,14 @@ export default function Workshop() {
     }
   }, vis)
 
-  // custom drag: only the tool elements capture pointers, so the rest of the page still scrolls on touch
-  const down = (e, i) => {
+  // custom drag. mouse: grab instantly. finger: press and hold ~170ms to pick a tool up, so a normal swipe over the tools still
+  // scrolls the page (the tools cover most of the board, so grabbing instantly made the page impossible to scroll on a phone).
+  const pend = useRef(null)
+  const grab = (i, cx, cy, el, pid) => {
     const s = sim.current
     const t = s.tools[i]
     const r = board.current.getBoundingClientRect()
-    const px = e.clientX - r.left, py = e.clientY - r.top
+    const px = cx - r.left, py = cy - r.top
     if (!t.off) {
       Composite.remove(s.engine.world, t.pin); t.off = true
       setStats((o) => ({ off: o.off + 1 }))
@@ -122,17 +124,25 @@ export default function Workshop() {
     const c = Constraint.create({ pointA: { x: px, y: py }, bodyB: t.body, pointB: pb, stiffness: 0.16, damping: 0.12, length: 0 })
     Composite.add(s.engine.world, c)
     s.drag = { c, px, py, i }
-    e.currentTarget.setPointerCapture(e.pointerId)
-    e.currentTarget.classList.add('held')
+    try { el.setPointerCapture(pid) } catch {}
+    el.classList.add('held')
     beep(500, 0.03, 'triangle', 0.02)
+  }
+  const down = (e, i) => {
+    if (e.pointerType !== 'touch') return grab(i, e.clientX, e.clientY, e.currentTarget, e.pointerId)
+    const el = e.currentTarget, id = e.pointerId, x = e.clientX, y = e.clientY
+    clearTimeout(pend.current?.timer)
+    pend.current = { x, y, timer: setTimeout(() => { pend.current = null; navigator.vibrate?.(12); grab(i, x, y, el, id) }, 170) }
   }
   const mv = (e) => {
     const s = sim.current
+    if (pend.current && Math.hypot(e.clientX - pend.current.x, e.clientY - pend.current.y) > 8) { clearTimeout(pend.current.timer); pend.current = null } // they're scrolling
     if (!s?.drag) return
     const r = board.current.getBoundingClientRect()
     s.drag.px = clamp(e.clientX - r.left, 0, s.w); s.drag.py = clamp(e.clientY - r.top, 0, height)
   }
   const up = (e) => {
+    if (pend.current) { clearTimeout(pend.current.timer); pend.current = null }
     const s = sim.current
     if (!s?.drag) return
     const t = s.tools[s.drag.i]
@@ -142,6 +152,13 @@ export default function Workshop() {
     s.drag = null
     e.currentTarget.classList.remove('held')
   }
+  // once a tool is held, the page must not scroll under the finger (react's touchmove is passive, so this needs a native listener)
+  useEffect(() => {
+    const el = board.current
+    const stop = (e) => { if (sim.current?.drag && e.cancelable) e.preventDefault() }
+    el.addEventListener('touchmove', stop, { passive: false })
+    return () => el.removeEventListener('touchmove', stop)
+  }, [])
   const rehang = () => {
     const s = sim.current
     s.tools.forEach((t, i) => {

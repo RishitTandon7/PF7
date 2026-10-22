@@ -9,7 +9,7 @@
 .label-btn:active { transform: rotate(-1.5deg) translate(2px, 2px); }
 .ws-count { font: 600 15px 'Courier Prime', monospace; opacity: 0.75; }
 .ws-board { position: relative; overflow: hidden; touch-action: pan-y; background: radial-gradient(circle at 20px 20px, #7a5a2c 0 4px, transparent 5px) 0 0 / 40px 40px, linear-gradient(#cba96f, #c29e62); box-shadow: inset 0 18px 30px rgba(0, 0, 0, 0.2); }
-.tool { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; transform-origin: 50% 50%; will-change: transform; }
+.tool { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; transform-origin: 50% 50%; will-change: transform; }
 .tool svg { display: block; filter: drop-shadow(5px 6px 0 rgba(0, 0, 0, 0.28)); pointer-events: none; }
 .tool.held { cursor: grabbing; z-index: 10; }
 .tool.held svg { filter: drop-shadow(10px 14px 0 rgba(0, 0, 0, 0.22)); }

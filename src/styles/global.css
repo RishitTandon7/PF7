@@ -241,3 +241,6 @@ a, button, [role=button], input, label, summary, select { touch-action: manipula
   .bubble, .pet-bubble { will-change: auto; }
 }
 @media (max-width: 820px) and (hover: none) { .menubar { backdrop-filter: none; } }
+
+/* every 3d scene: a finger that starts on it must still scroll the page. orbit controls write touch-action:none onto the container, so this has to win. */
+[data-gl], [data-gl] div, [data-gl] canvas { touch-action: pan-y !important; }

@@ -100,7 +100,7 @@ export default function Robot({ onGrab }) {
   const box = useRef()
   useEffect(() => {
     const el = box.current
-    const down = (e) => { drag.current.moved = 0; drag.current.down = true; drag.current.lx = e.clientX; drag.current.ly = e.clientY; el.setPointerCapture(e.pointerId); onGrab?.() }
+    const down = (e) => { drag.current.moved = 0; drag.current.down = true; drag.current.lx = e.clientX; drag.current.ly = e.clientY; if (e.pointerType !== 'touch') el.setPointerCapture(e.pointerId); onGrab?.() }
     const move = (e) => { const d = drag.current; if (!d.down) return; d.dx += e.clientX - d.lx; d.dy += e.clientY - d.ly; d.moved += Math.abs(e.clientX - d.lx) + Math.abs(e.clientY - d.ly); d.lx = e.clientX; d.ly = e.clientY }
     const up = () => { if (drag.current.down && drag.current.moved < 6) emit('bot-poke'); drag.current.down = false }
     el.addEventListener('pointerdown', down); el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up)

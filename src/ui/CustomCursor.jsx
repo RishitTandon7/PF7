@@ -7,7 +7,8 @@ import { useTick } from '../lib/hooks'
 //  - finger touch: nothing is shown, and the native behaviour is untouched.
 const HOT = 'a, button, [role=button], input, textarea, select, label, summary, .mat, .bd-card, .ed-id, .dock-item'
 const GRAB = '.tool, .ed-card, .robot-grab, canvas, .crt canvas'
-const TIP = { x: 26.6, y: 21.7 } // where the arrow's tip sits inside the 46x48 svg
+// the click point is the arrow's sharp tip: the top-left vertex (5,3) of the path, in a 46x48 viewBox drawn at 34x36 px
+const TIP = { x: 5 * (34 / 46), y: 3 * (36 / 48) }
 
 export default function CustomCursor() {
   const el = useRef()
