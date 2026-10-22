@@ -36,3 +36,13 @@
 .k-lead .face.back { background: #f4efe6; }
 .k-lead .face::before { background: rgba(255, 255, 255, 0.25); }
 @media (max-width: 820px) { .bd-row { gap: 110px; margin-top: 100px; } .bd-card { width: 190px; height: 280px; } .bd-slot { width: 200px; } }
+
+/* ---------- phone: the three badges are a horizontal swipe row, one snaps into the middle at a time ---------- */
+.bd-swipe { display: none; }
+@media (max-width: 820px), (hover: none) {
+  .bd-row { flex-wrap: nowrap; justify-content: flex-start; gap: 26px; margin: 0 -5vw; padding: 112px calc(50% - 100px) 36px; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: none; }
+  .bd-row::-webkit-scrollbar { display: none; }
+  .bd-slot { flex: 0 0 auto; width: 200px; scroll-snap-align: center; scroll-snap-stop: always; }
+  .bd-swipe { display: block; font: 700 13px var(--mono); margin-top: 10px; color: #55616f; animation: bd-nudge 1.6s ease-in-out 3; }
+}
+@keyframes bd-nudge { 50% { transform: translateX(10px); } }

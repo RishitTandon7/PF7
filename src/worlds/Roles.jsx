@@ -55,6 +55,7 @@ export default function Roles() {
           <header>
             <h2>three badges.</h2>
             <p>the stuff i actually got trusted with. flip them.</p>
+            <p className="bd-swipe" aria-hidden>swipe sideways for the next badge →</p>
           </header>
           <div className="bd-row">{ROLES.map((r, i) => <Badge key={r.id} r={r} i={i} />)}</div>
         </div>
