@@ -81,3 +81,14 @@
 
 .mc-exit { position: absolute; left: 16px; top: 38px; z-index: 6; background: rgba(2, 14, 11, 0.9); color: #38ffb0; border: 1px solid #38ffb0; padding: 6px 12px; font: 700 12px 'Share Tech Mono', monospace; letter-spacing: 0.06em; text-transform: uppercase; }
 .mc-exit:hover { background: #38ffb0; color: #02100b; }
+
+/* ---------- phone walkthrough: tap through, no scroll-scrubbing ---------- */
+.mc-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; pointer-events: none; transform-origin: 60% 45%; will-change: opacity, transform; }
+.mc-track.phone { height: auto; }
+.mc-track.phone .mc-stick { position: relative; top: 0; height: min(84svh, 720px); }
+.mc-nav { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 7; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.mc-nav span { font: 12px 'Share Tech Mono', monospace; color: #9fe9cf; }
+.mc-nav button { min-height: 48px; min-width: 104px; padding: 0 16px; background: rgba(2, 14, 11, 0.92); color: #38ffb0; border: 1px solid #38ffb0; font: 700 14px 'Chakra Petch', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
+.mc-nav button.primary { background: #38ffb0; color: #02100b; }
+.mc-nav button:disabled { opacity: 0.3; }
+@media (max-width: 820px) { .mc-track.phone .mc-role { bottom: 70px; } .mc-track.phone .mc-exit { top: 8px; left: 8px; } .mc-track.phone .mc-top { padding-top: 40px; } }

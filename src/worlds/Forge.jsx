@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { Window } from '../ui/Window'
 import GL from '../ui/GL'
@@ -10,6 +10,34 @@ import { useVisible } from '../lib/hooks'
 import './forge.css'
 
 const GOAL = 10000
+
+// phones: the orbit controls captured the finger (page couldn't scroll), so on touch the scene spins itself instead.
+// it auto-rotates, a HORIZONTAL drag adds spin with momentum, and a vertical swipe is left alone so the page scrolls.
+function useSpin(group, enabled, auto) {
+  const gl = useThree((s) => s.gl)
+  const vel = useRef(0), d = useRef(null)
+  useEffect(() => {
+    if (!enabled) return
+    const el = gl.domElement
+    const down = (e) => { d.current = { x: e.clientX, y: e.clientY, lx: e.clientX, mode: null } }
+    const move = (e) => {
+      const s = d.current; if (!s) return
+      const dx = e.clientX - s.lx; s.lx = e.clientX
+      if (!s.mode) { const ax = Math.abs(e.clientX - s.x), ay = Math.abs(e.clientY - s.y); if (ax + ay > 6) s.mode = ax > ay * 1.2 ? 'h' : 'v' }
+      if (s.mode === 'h') vel.current = dx * 0.014
+    }
+    const end = () => { d.current = null }
+    el.addEventListener('pointerdown', down); el.addEventListener('pointermove', move)
+    el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end)
+    return () => { el.removeEventListener('pointerdown', down); el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', end); el.removeEventListener('pointercancel', end) }
+  }, [gl, enabled])
+  useFrame((_, dt) => {
+    if (!enabled || !group.current) return
+    const k = Math.min(dt * 60, 3)
+    group.current.rotation.y += auto * dt + vel.current * k
+    vel.current *= Math.pow(0.94, k)
+  })
+}
 // on a phone the 3d scenes never capture the finger (orbit controls did, so the page couldn't be scrolled over them). they auto-rotate instead.
 const COARSE = typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches
 const GREENS = ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353']
@@ -46,6 +74,8 @@ function Progress({ total }) {
 
 /* ---------- 3d skyline ---------- */
 function Skyline({ days, onHover }) {
+  const spin = useRef()
+  useSpin(spin, COARSE, 0.22)
   const mesh = useRef(), t0 = useRef(null)
   const { cells, max } = useMemo(() => {
     const start = new Date(days[0][0] + 'T00:00:00Z').getUTCDay()
@@ -87,11 +117,13 @@ function Skyline({ days, onHover }) {
       <ambientLight intensity={1.2} />
       <directionalLight position={[8, 14, 6]} intensity={2.6} />
       <directionalLight position={[-10, 6, -8]} intensity={1} color="#39d353" />
+      <group ref={spin}>
       <instancedMesh ref={mesh} args={[null, null, cells.length]}
         onPointerMove={(e) => { e.stopPropagation(); onHover(cells[e.instanceId]) }} onPointerOut={() => onHover(null)}>
         <boxGeometry args={[1, 1, 1]} /><meshStandardMaterial roughness={0.6} />
       </instancedMesh>
       <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[34, 8]} /><meshStandardMaterial color="#0d1117" /></mesh>
+      </group>
       <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.5} enableDamping minPolarAngle={0.45} maxPolarAngle={1.45} target={[0, 0.5, 0]} enabled={!COARSE} />
     </>
   )
@@ -101,6 +133,8 @@ function Skyline({ days, onHover }) {
 const hash = (s) => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return ((h >>> 0) % 10000) / 10000 }
 
 function Galaxy({ repos, lang, onHover }) {
+  const spin = useRef()
+  useSpin(spin, COARSE, 0.18)
   const meshes = useRef([])
   const nodes = useMemo(() => {
     const sorted = [...repos].sort((a, b) => repoWeight(b) - repoWeight(a))
@@ -124,6 +158,7 @@ function Galaxy({ repos, lang, onHover }) {
   return (
     <>
       <ambientLight intensity={0.5} /><pointLight position={[0, 0, 0]} intensity={30} color="#39d353" />
+      <group ref={spin}>
       <mesh ref={core}><icosahedronGeometry args={[0.55, 1]} /><meshStandardMaterial color="#39d353" emissive="#26a641" emissiveIntensity={1.5} wireframe /></mesh>
       {[2.5, 4.5, 6.5, 8.5].map((r) => <mesh key={r} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[r, r + 0.012, 96]} /><meshBasicMaterial color="#30363d" transparent opacity={0.6} /></mesh>)}
       {nodes.map((n, i) => (
@@ -135,6 +170,7 @@ function Galaxy({ repos, lang, onHover }) {
           <meshStandardMaterial color={colorOf(n.r.language)} emissive={colorOf(n.r.language)} emissiveIntensity={0.9} roughness={0.4} />
         </mesh>
       ))}
+      </group>
       <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.35} enableDamping minPolarAngle={0.3} maxPolarAngle={1.5} enabled={!COARSE} />
     </>
   )
@@ -239,7 +275,7 @@ export default function Forge() {
           <GL camera={{ position: [0, 13, 31], fov: 38 }}>
             <Skyline days={d.days} onHover={setDay} />
           </GL>
-          <p className="fg-cap">the skyline — {typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches ? 'auto-rotating · tap a day' : 'drag to orbit · hover a day'} · taller = more commits</p>
+          <p className="fg-cap">the skyline — {typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches ? 'swipe sideways to spin · tap a day' : 'drag to orbit · hover a day'} · taller = more commits</p>
         </div>
 
         <div className="fg-mid">
@@ -248,7 +284,7 @@ export default function Forge() {
             <GL camera={{ position: [0, 9, 14], fov: 40 }}>
               <Galaxy repos={d.repos} lang={lang} onHover={setRepo} />
             </GL>
-            <p className="fg-cap">size = activity · color = language · {typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches ? 'auto-rotating · tap a planet to open the repo' : 'click a planet to open the repo'}</p>
+            <p className="fg-cap">size = activity · color = language · {typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches ? 'swipe sideways to spin · tap a planet to open the repo' : 'click a planet to open the repo'}</p>
           </div>
           <div className="fg-ringwrap">
             <h3>language ring</h3>

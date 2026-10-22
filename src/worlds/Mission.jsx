@@ -262,23 +262,33 @@ export default function Mission() {
   const vis = useVisible(root)
   const hud = useRef({})
   const [tour, setTour] = useState(false)
+  // on phones the walkthrough is a tap-through story (back / next): the globe flies to each stop on its own, and three still frames from
+  // the recording crossfade in place of the 18mb video. scrubbing a video and a webgl globe with your thumb is what phones are worst at.
+  const [phone] = useState(() => typeof window !== 'undefined' && window.matchMedia('(hover: none), (max-width: 820px)').matches)
+  const [stop, setStop] = useState(0)
+  const STOP_P = [0.02, 0.17, 0.33, 0.56, 0.84, 0.95] // where the story sits for each of the six stops
+  const go = (i) => {
+    const n = Math.max(0, Math.min(STEPS.length - 1, i)); setStop(n)
+    gsap.to(P, { current: STOP_P[n], duration: 1.9, ease: 'power2.inOut', overwrite: true })
+  }
 
   useEffect(() => {
-    if (!tour) return
+    if (!tour || phone) return
     const st = ScrollTrigger.create({ trigger: track.current, start: 'top top+=60', end: 'bottom bottom', onUpdate: (s) => (P.current = s.progress) })
     ScrollTrigger.refresh()
     return () => st.kill()
-  }, [tour])
+  }, [tour, phone])
 
   const start = () => {
     emit('touched', 'mission') // the pet should not say "you missed it" about something that is running
     emit('touched', 'mission') // starting the walkthrough counts as engaging with this section
-    setTour(true)
+    setTour(true); setStop(0); P.current = STOP_P[0]
     setTimeout(() => scrollToEl(track.current), 80)
   }
 
   // closing the walkthrough puts the card (and its start button) back, and leaves you at the top of this section
   const close = () => {
+    gsap.killTweensOf(P)
     hud.current = {}; P.current = 0
     setTour(false)
     setTimeout(() => scrollToEl(root.current, true), 60)
@@ -306,6 +316,13 @@ export default function Mission() {
     h.alerts.forEach((el, i) => el.classList.toggle('on', v >= ALERTS[i][0]))
     h.alerts.forEach((el, i) => el.classList.toggle('hot', i >= 4 && v >= ALERTS[i][0]))
     // the recording is scrubbed by scroll; fades in over the globe, out into the 3d terrain
+    if (h.stills) {
+      const o1 = clamp((v - 0.26) / 0.06, 0, 1) * (1 - clamp((v - 0.42) / 0.1, 0, 1))
+      const o2 = clamp((v - 0.42) / 0.1, 0, 1) * (1 - clamp((v - 0.66) / 0.1, 0, 1))
+      const o3 = clamp((v - 0.66) / 0.1, 0, 1)
+      const z = 1 + clamp((v - 0.3) / 0.6, 0, 1) * 0.1
+      h.stills.forEach((el, i) => { if (!el) return; el.style.opacity = [o1, o2, o3][i].toFixed(2); el.style.transform = 'scale(' + z.toFixed(3) + ')' })
+    }
     const vid = h.vid
     if (vid && vid.duration) {
       const k = clamp((v - 0.3) / 0.4, 0, 1)
@@ -330,16 +347,18 @@ export default function Mission() {
             <div className="mc-intro-card">
               <small>{NIDM.org} · research intern</small>
               <h2>my research internship, explained</h2>
-              <p>glacial lake floods are hard to explain in one line. so this is a guided walkthrough: six stops, about 30 seconds, you just scroll.</p>
+              <p>glacial lake floods are hard to explain in one line. so this is a guided walkthrough: six stops, about 30 seconds, you just {phone ? 'tap next' : 'scroll'}.</p>
               <ol className="mc-stops">{STEPS.map((s) => <li key={s[1]}>{s[1].split(' · ')[1]}</li>)}</ol>
               <button className="mc-go" onClick={start}>▶ start the walkthrough</button>
-              <span className="mc-hintsmall">sound on is better. you can scroll back up any time.</span>
+              <span className="mc-hintsmall">{phone ? 'sound on is better. close it any time.' : 'sound on is better. you can scroll back up any time.'}</span>
             </div>
           </div>
         )}
-        {tour && <div className="mc-track" ref={track}>
+        {tour && <div className={'mc-track' + (phone ? ' phone' : '')} ref={track}>
           <div className="mc-stick">
-            <video className="mc-vid" ref={(e) => (hud.current.vid = e)} src="/media/lhonak-zoom.mp4" muted playsInline preload="auto" aria-hidden />
+            {phone
+              ? [1, 2, 3].map((n, i) => <img key={n} className="mc-still" ref={(e) => ((hud.current.stills ||= [])[i] = e)} src={`/media/lhonak-${n}.jpg`} alt="" decoding="async" />)
+              : <video className="mc-vid" ref={(e) => (hud.current.vid = e)} src="/media/lhonak-zoom.mp4" muted playsInline preload="auto" aria-hidden />}
             <GL className="mc-gl" camera={{ position: [0, 0, 3.6], fov: 38, near: 0.02, far: 80 }}>
               <fog attach="fog" args={['#06130f', 28, 80]} />
               <ambientLight intensity={0.9} />
@@ -378,7 +397,13 @@ export default function Mission() {
               <p ref={(e) => (hud.current.stepP = e)}>{STEPS[0][2]}</p>
               <div className="mc-dots" aria-hidden>{STEPS.map((_, i) => <i key={i} className={i === 0 ? 'on' : ''} ref={(e) => ((hud.current.stepDots ||= [])[i] = e)} />)}</div>
             </div>
-            <p className="mc-hint">↓ keep scrolling. the tour follows your scroll.</p>
+            {phone
+              ? <nav className="mc-nav" aria-label="walkthrough controls">
+                  <button onClick={() => go(stop - 1)} disabled={stop === 0}>◀ back</button>
+                  <span>{stop + 1} / {STEPS.length}</span>
+                  {stop < STEPS.length - 1 ? <button className="primary" onClick={() => go(stop + 1)}>next ▶</button> : <button className="primary" onClick={close}>done ✓</button>}
+                </nav>
+              : <p className="mc-hint">↓ keep scrolling. the tour follows your scroll.</p>}
             <button className="mc-exit" onClick={close}>✕ close walkthrough</button>
           </div>
         </div>}
