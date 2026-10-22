@@ -178,6 +178,10 @@ function Galaxy({ repos, lang, onHover }) {
 
 /* ---------- language ring ---------- */
 function Ring({ repos, lang, setLang }) {
+  // hover = a temporary preview that goes away when the pointer leaves; click = pin it (click again to unpin)
+  const pinned = useRef(null)
+  const pin = (l) => { pinned.current = pinned.current === l ? null : l; setLang(pinned.current) }
+  const back = () => setLang(pinned.current)
   const data = useMemo(() => {
     const c = {}
     repos.forEach((r) => { const l = r.language || 'other'; c[l] = (c[l] || 0) + 1 })
@@ -194,7 +198,7 @@ function Ring({ repos, lang, setLang }) {
         <g transform="rotate(-90 100 100)">
           {data.map(([l, n]) => {
             const len = (n / total) * C
-            const el = <circle key={l} cx="100" cy="100" r={R} fill="none" stroke={colorOf(l)} strokeWidth={lang === l ? 30 : 22} strokeDasharray={`${Math.max(0, len - 1.5)} ${C}`} strokeDashoffset={-off} opacity={!lang || lang === l ? 1 : 0.25} style={{ transition: 'stroke-width .2s, opacity .2s', cursor: 'pointer' }} onClick={() => setLang(lang === l ? null : l)} onPointerEnter={() => setLang(l)} />
+            const el = <circle key={l} cx="100" cy="100" r={R} fill="none" stroke={colorOf(l)} strokeWidth={lang === l ? 30 : 22} strokeDasharray={`${Math.max(0, len - 1.5)} ${C}`} strokeDashoffset={-off} opacity={!lang || lang === l ? 1 : 0.25} style={{ transition: 'stroke-width .2s, opacity .2s', cursor: 'pointer' }} onClick={() => pin(l)} onPointerEnter={(e) => e.pointerType === 'mouse' && setLang(l)} onPointerLeave={back} />
             off += len
             return el
           })}
@@ -204,7 +208,7 @@ function Ring({ repos, lang, setLang }) {
       </svg>
       <ul className="legend">
         {data.slice(0, 8).map(([l, n]) => (
-          <li key={l}><button className={lang === l ? 'on' : ''} onClick={() => setLang(lang === l ? null : l)}><i style={{ background: colorOf(l) }} />{l.toLowerCase()} <b>{n}</b></button></li>
+          <li key={l}><button className={lang === l ? 'on' : ''} onClick={() => pin(l)} onPointerEnter={(e) => e.pointerType === 'mouse' && setLang(l)} onPointerLeave={back}><i style={{ background: colorOf(l) }} />{l.toLowerCase()} <b>{n}</b></button></li>
         ))}
       </ul>
     </div>
