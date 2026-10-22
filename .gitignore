@@ -1,0 +1,9 @@
+node_modules
+dist
+*.log
+.vercel
+.env*
+# the raw screen recording is already encoded into public/media
+Recording*.mp4
+scratch
+_e.mjs
