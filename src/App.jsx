@@ -10,6 +10,7 @@ import Hero from './ui/Hero'
 import Footer from './ui/Footer'
 import Pet from './ui/Pet'
 import CustomCursor from './ui/CustomCursor'
+import { Analytics } from '@vercel/analytics/react'
 import { Lazy } from './ui/Window'
 import { WORLDS } from './worlds'
 import { initScroll, scrollToId } from './lib/scroll'
@@ -83,6 +84,7 @@ export default function App() {
       <FX />
       <Pet />
       <CustomCursor />
+      <Analytics /> {/* vercel web analytics: visitor + page-view counts only. does nothing until enabled in the vercel dashboard */}
     </>
   )
 }
