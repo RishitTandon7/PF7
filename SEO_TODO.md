@@ -13,7 +13,7 @@ Everything below needs your accounts, your decisions, or facts I don't have. Cod
 - [ ] Paste it into `scripts/seo-build.mjs`, in the `head()` function, replacing the commented placeholder (and the Bing `msvalidate.01` tag the same way), then redeploy and click Verify.
 - [ ] Submit `https://portfolio.rishit.site/sitemap.xml` in Search Console and in Bing Webmaster Tools (Bing can import straight from Search Console).
 - [ ] **Request Indexing** (URL Inspection → Request indexing) for the homepage and each of these:
-  `/`, `/about`, `/skills`, `/how-its-built`, `/projects/arclyth`, `/projects/aisgr-smart-glasses`, `/projects/documind`, `/projects/glof-early-warning`, `/projects/agenthub`, `/projects/linkedout-pro`, `/projects/splitfair`, `/projects/slam-drone`, `/projects/neurovibe-bci`
+  `/`, `/about`, `/skills`, `/how-its-built`, `/portfolio-design-tips`, `/projects/arclyth`, `/projects/aisgr-smart-glasses`, `/projects/documind`, `/projects/glof-early-warning`, `/projects/agenthub`, `/projects/linkedout-pro`, `/projects/splitfair`, `/projects/slam-drone`, `/projects/neurovibe-bci`
 - [ ] Test structured data at https://search.google.com/test/rich-results and https://validator.schema.org on the homepage and one project page. My checker validates structure and required fields offline, but Google's tools are the real authority.
 - [ ] Share-preview check: paste the homepage into https://www.opengraph.xyz (or LinkedIn Post Inspector) to confirm the OG image shows.
 
@@ -59,3 +59,21 @@ Open each page's source and search `TODO(rishit)`, or edit `seo/data.mjs` (the `
 - **The `SplitFair` page links to a GitHub search**, not a repo, because I couldn't tell which of your `Splits*` repos it is.
 - **Lighthouse scores:** the homepage scores 94–95 mobile performance on a plain static server (98–99 under `vite preview`), the static pages score 100 in all four categories. The WebGL home page can't reach 100 because React alone is ~190 KB, but the 3D (≈900 KB) is now loaded after the first paint.
 - The GitHub API is only called after a visitor first interacts (until then the page uses the cached/snapshot numbers), so a rate-limited API can never slow or break the first load.
+
+## 6. New content pages (/how-its-built, /portfolio-design-tips)
+- [ ] **Short GIFs** for /how-its-built: not added (the page has six real screenshots instead). Record 3–4 short loops (terminal boot, forge skyline orbit, workshop throw, mission walkthrough), save under `public/media/built/`, then add them in `seo/content.mjs` (`fig(...)` helper; use `<video autoplay muted loop playsinline>` or a GIF with width/height and alt).
+- [ ] **Open-source template badge:** when you publish the template repo, set `TEMPLATE_REPO` in `seo/data.mjs` to its URL and rebuild. The badge (about window, footer) and an llms.txt line appear automatically. While it is empty nothing is shown.
+- [ ] **"Featured on" badges:** after a gallery accepts you, add `{ name: 'Awwwards', url: '<your listing url>' }` to `FEATURED` in `seo/data.mjs`. Hidden until then. Only add real listings.
+- [ ] **Gallery submissions** (use `/how-its-built` as the link, the `og/how-its-built.png` image, the one-line pitch "an operating system as a portfolio: nine worlds, 3D, physics, live GitHub data"):
+  1. Awwwards: create an account, "Submit a site", pay the fee, attach desktop + mobile screenshots (`public/media/built/`).
+  2. CSS Design Awards (CSSDA): submit the URL with the same assets.
+  3. Godly, Siteinspire, Dribbble and Behance: post screenshots with a link back to `/how-its-built`.
+  4. Product Hunt, Peerlist, r/webdev (Showoff Saturday), r/InternetIsBeautiful, Hacker News "Show HN": link `/how-its-built` for the story, `/` for the demo.
+- [ ] Request indexing for the two new URLs in Search Console, and re-request the homepage (new FAQ entries and window layout).
+- [ ] Check the claims on /how-its-built are what you'd say yourself (nine hidden achievements; "a command in the terminal that hires me"; what the old site /os looked like).
+
+## 7. Domain handling decisions (from your corrections)
+- `rishit.site` is **not** redirected anywhere (it is your hub). Canonicals on this site point to `portfolio.rishit.site`.
+- `www.portfolio.rishit.site` → 301 to the apex (rule in `vercel.json`; it only matters if you add that domain in Vercel). http → https is automatic on Vercel.
+- Trailing-slash duplicates (`/about/`): **no redirect rule**. A source rule for `/about/` risks a redirect loop on Vercel (it ignores the trailing slash when matching), so the canonical tag on every page handles it. Revisit only if Search Console shows duplicates.
+- The old site `/os/` (and `/os/3d`, `/os/3d/playbook`) is `noindex, follow` with the canonical pointing at the homepage, both as a meta tag and an `X-Robots-Tag` header. It is not blocked in robots.txt, because a blocked page can't be crawled to see its noindex.

@@ -9,7 +9,15 @@ export const LINKS = {
   hub: 'https://rishit.site',
   email: 'rishit.tandon.7@gmail.com',
 }
-export const INTRO = 'I am Rishit Tandon, a final-year B.Tech computer science student at SRM Institute of Science and Technology (Kattankulathur, Chennai), graduating in 2027. I build AI agents, autonomous drones, smart glasses, hardware with Arduino and ESP32, and full-stack products. I have 12+ hackathon wins, 6 of them first places, and 100+ public GitHub repositories. I am looking for SDE and AI/ML engineer roles from 2027.'
+export const CAMPUS = 'SRM Institute of Science and Technology, Kattankulathur'
+export const AVAIL = 'open to internships now and full-time SDE / AI/ML engineer roles from 2027'
+export const CONTRIB = '9,000+ contributions in 2026' // static phrasing for json-ld and llms.txt (the live count is only on the page itself)
+export const INTRO = `I am Rishit Tandon, a final-year B.Tech computer science student at ${CAMPUS} (Chennai), graduating in 2027. I build AI agents, autonomous drones, smart glasses, hardware with Arduino and ESP32, and full-stack products. I have 12+ hackathon wins, 6 of them first places, and 100+ public GitHub repositories. I am ${AVAIL}.`
+
+// set to the repo url once the template is public; the badge and the sitemap/llms mention stay hidden while this is ''
+export const TEMPLATE_REPO = ''
+// gallery badges: add { name: 'Awwwards', url: 'https://...' } once a site of the day / honorable mention is real. hidden while empty.
+export const FEATURED = []
 
 export const HOME = {
   path: '/',
@@ -232,13 +240,14 @@ export const PROJECTS = [
     about: 'NeuroVibe, a brain-computer interface rover controlled by EEG signals.',
   },
 ]
+export const PUBLISHED = '2026-10-24'
 export const projectUrl = (p) => `${SITE}/projects/${p.slug}`
 
 // ---------- pages ----------
 export const ABOUT = {
   path: '/about',
   title: 'About Rishit Tandon | CSE Student, AI Engineer, Hackathon Winner',
-  desc: 'About Rishit Tandon: final-year CSE student at SRM IST, AI/ML and full-stack developer, 12+ hackathon wins, 100+ GitHub repos, open to SDE roles from 2027.',
+  desc: 'About Rishit Tandon: final-year CSE student at SRM IST, AI/ML and full-stack developer, 12+ hackathon wins, 100+ GitHub repos, open to internships, 2027 roles.',
   h1: 'About Rishit Tandon',
   og: '/og/about.png',
 }
@@ -252,9 +261,16 @@ export const SKILLS = {
 export const BUILT = {
   path: '/how-its-built',
   title: 'How This Interactive Portfolio Website Is Built | Rishit Tandon',
-  desc: 'How Rishit Tandon built an interactive 3D developer portfolio website: React, Three.js, GSAP, lazy-loaded worlds and a measured Lighthouse score.',
-  h1: 'How this portfolio is built',
+  desc: 'Case study of an interactive, OS-style 3D portfolio website: the concept, React, Three.js and GSAP stack, performance, easter eggs and a before and after.',
+  h1: 'How this interactive portfolio website is built',
   og: '/og/how-its-built.png',
+}
+export const TIPS_PAGE = {
+  path: '/portfolio-design-tips',
+  title: 'Portfolio Design Tips: 10 Lessons From a Non-Template Site',
+  desc: 'Ten practical tips for building a developer portfolio that does not look like a template, each one shown with a real example from the rishit_os portfolio.',
+  h1: 'Portfolio design tips: what I learned building a portfolio that does not look like a template',
+  og: '/og/portfolio-design-tips.png',
 }
 
 export const WINS = {
@@ -271,20 +287,23 @@ export const SKILL_GROUPS = [
 ]
 
 export const FAQ = [
-  ['Who is Rishit Tandon?', 'Rishit Tandon is a final-year B.Tech computer science student at SRM Institute of Science and Technology (Kattankulathur, Chennai), graduating in 2027. He is an AI/ML engineer and full-stack developer who builds AI agents, autonomous drones, smart glasses and hardware.'],
+  ['Who is Rishit Tandon?', 'Rishit Tandon is a final-year B.Tech computer science student at SRM Institute of Science and Technology, Kattankulathur (Chennai), graduating in 2027. He is an AI/ML engineer and full-stack developer who builds AI agents, autonomous drones, smart glasses and hardware.'],
   ['What has Rishit Tandon built?', 'He has built Arclyth (a three-drone disaster relief swarm), A.I.S.G.R. AI smart glasses with a Jarvis assistant, DocuMind (agentic document intelligence with hybrid RAG), a GLOF early-warning machine learning pipeline, AgentHub (an AI agent marketplace), LinkedOut Pro (an AI LinkedIn content platform), SplitFair (an expense-splitting PWA), an autonomous SLAM drone and NeuroVibe (a brain-computer interface rover).'],
   ['How many hackathons has Rishit Tandon won?', 'Rishit has 12+ hackathon and expo wins, including 6 first-place finishes, among them the SUTD Smorphi challenge in Singapore, CismoHack and the NWC Expo.'],
-  ['Where does Rishit Tandon study?', 'He studies B.Tech Computer Science and Engineering at SRM Institute of Science and Technology in Kattankulathur, Chennai, from 2023 to 2027.'],
+  ['Where does Rishit Tandon study?', 'He studies B.Tech Computer Science and Engineering at SRM Institute of Science and Technology, Kattankulathur (Chennai), from 2023 to 2027.'],
   ['What is Arclyth?', 'Arclyth is a three-drone disaster relief swarm built by Rishit Tandon. The drones, named Crux, Oberon and Capella, work together as one system, and the project won a national hackathon.'],
   ['What is DocuMind?', 'DocuMind is an agentic document intelligence system. It uses adaptive digital image processing, OCR, a knowledge graph and hybrid RAG to turn scanned documents into answers.'],
   ['What is A.I.S.G.R.?', 'A.I.S.G.R. is a pair of AI smart glasses, with a Jarvis voice assistant, that Rishit Tandon started building in 2021, before smart glasses became a mainstream product.'],
   ['What tech stack does Rishit Tandon use?', 'Python and LLM agents for AI work, React, Next.js and TypeScript for full-stack products, Arduino and ESP32 for hardware, and Three.js with GSAP for interactive front ends like this portfolio.'],
-  ['Is Rishit Tandon available for hire?', 'Yes. He is looking for SDE and AI/ML engineer roles starting in 2027, and is open to internships before then.'],
-  ['How can I contact Rishit Tandon?', 'Email rishit.tandon.7@gmail.com, or reach him on GitHub (github.com/RishitTandon7) or LinkedIn (linkedin.com/in/rishit-tandon-928661287). His other work is linked from rishit.site.'],
+  ['Is Rishit Tandon available for hire?', 'Yes. Rishit is open to internships now and full-time SDE / AI/ML engineer roles from 2027. if that is you, the email is below.'],
+  ['How can I contact Rishit Tandon?', 'Email rishit.tandon.7@gmail.com, or reach him on GitHub (github.com/RishitTandon7) or LinkedIn (linkedin.com/in/rishit-tandon-928661287). His other work is linked from rishit.site. email is fastest.'],
+  ['What is a good example of a creative developer portfolio?', 'Rishit Tandon\'s portfolio at portfolio.rishit.site is an interactive, OS-style developer portfolio with a boot terminal, nine themed worlds built with React, Three.js and GSAP, live GitHub data and hidden easter eggs. you are standing in it, poke around; the how-its-built page explains every decision.'],
+  ['Who is a good AI and hardware developer from India or SRM?', 'Rishit Tandon is a final-year computer science student at SRM Institute of Science and Technology, Kattankulathur, who builds AI agents and hardware, including a three-drone disaster relief swarm, AI smart glasses started in 2021 and a brain-computer interface rover, with 12+ hackathon wins. i like software that has to survive contact with the real world.'],
+  ['What makes this portfolio\'s UI/UX different?', 'It is designed as a small operating system called rishit_os, where each section is an app window with its own palette, fonts and signature motion, from a paper desk for education to a CRT arcade for hackathon wins, and phones get a separate touch-first design instead of a shrunken desktop. no template, no gradient blob.'],
 ]
 
 export const ALL_PAGES = () => [
   { ...HOME, kind: 'home' },
-  { ...ABOUT, kind: 'about' }, { ...SKILLS, kind: 'skills' }, { ...BUILT, kind: 'built' },
+  { ...ABOUT, kind: 'about' }, { ...SKILLS, kind: 'skills' }, { ...BUILT, kind: 'built' }, { ...TIPS_PAGE, kind: 'tips' },
   ...PROJECTS.map((p) => ({ path: `/projects/${p.slug}`, title: p.title, desc: p.desc, h1: p.name + ': ' + p.tag, og: `/og/${p.slug}.png`, kind: 'project', slug: p.slug })),
 ]

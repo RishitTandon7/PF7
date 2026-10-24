@@ -6,14 +6,14 @@ import { ALL_PAGES, PROJECTS } from '../seo/data.mjs'
 
 const OUT = new URL('../public/', import.meta.url)
 mkdirSync(new URL('og/', OUT), { recursive: true })
-const ACCENT = { home: '#ffb000', about: '#ffb000', skills: '#39d353', built: '#38ffb0', arclyth: '#ffd23f', 'aisgr-smart-glasses': '#5ef2ff', documind: '#ffe000', 'glof-early-warning': '#38ffb0', agenthub: '#ff5a1f', 'linkedout-pro': '#4aa3ff', splitfair: '#7dff6a', 'slam-drone': '#ff7a59', 'neurovibe-bci': '#ff7a59' }
+const ACCENT = { home: '#ffb000', about: '#ffb000', skills: '#39d353', built: '#38ffb0', tips: '#ff7a59', arclyth: '#ffd23f', 'aisgr-smart-glasses': '#5ef2ff', documind: '#ffe000', 'glof-early-warning': '#38ffb0', agenthub: '#ff5a1f', 'linkedout-pro': '#4aa3ff', splitfair: '#7dff6a', 'slam-drone': '#ff7a59', 'neurovibe-bci': '#ff7a59' }
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
 
 const card = (pg) => {
   const key = pg.slug || pg.kind, c = ACCENT[key] || ACCENT[pg.kind] || '#ffb000'
   const proj = pg.kind === 'project' && PROJECTS.find((p) => p.slug === pg.slug)
-  const big = proj ? proj.name : pg.kind === 'home' ? 'Rishit Tandon' : pg.kind === 'about' ? 'About Rishit Tandon' : pg.kind === 'skills' ? 'Skills' : 'How this portfolio is built'
-  const sub = proj ? proj.tag : pg.kind === 'home' ? 'AI/ML Engineer & Full-Stack Developer' : pg.kind === 'about' ? 'CSE student at SRM IST · 12+ hackathon wins' : pg.kind === 'skills' ? 'AI/ML · Full-Stack · Embedded · Robotics' : 'React · Three.js · GSAP · Vite'
+  const big = proj ? proj.name : pg.kind === 'home' ? 'Rishit Tandon' : pg.kind === 'about' ? 'About Rishit Tandon' : pg.kind === 'skills' ? 'Skills' : pg.kind === 'tips' ? 'Portfolio design tips' : 'How this portfolio is built'
+  const sub = proj ? proj.tag : pg.kind === 'home' ? 'AI/ML Engineer & Full-Stack Developer' : pg.kind === 'about' ? 'CSE student at SRM IST · 12+ hackathon wins' : pg.kind === 'skills' ? 'AI/ML · Full-Stack · Embedded · Robotics' : pg.kind === 'tips' ? '10 lessons from a non-template site' : 'React · Three.js · GSAP · Vite'
   const size = big.length > 20 ? 84 : big.length > 13 ? 104 : 128
   return `<html><head><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet"><style>
   *{box-sizing:border-box;margin:0}body{width:1200px;height:630px;background:#0b0b0c;color:#f2ecdf;font-family:'JetBrains Mono',monospace;position:relative;overflow:hidden;
@@ -38,7 +38,7 @@ writeFileSync(new URL('favicon.svg', OUT), logoSvg)
 const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true })
 const p = await b.newPage({ viewport: { width: 1200, height: 630 } })
 for (const pg of ALL_PAGES()) {
-  const name = pg.slug || pg.kind === 'built' ? pg.slug || 'how-its-built' : pg.kind
+  const name = pg.slug || (pg.kind === 'built' ? 'how-its-built' : pg.kind === 'tips' ? 'portfolio-design-tips' : pg.kind)
   await p.setContent(card(pg), { waitUntil: 'networkidle' }); await p.evaluate(() => document.fonts.ready)
   await p.screenshot({ path: new URL(`og/${name}.png`, OUT).pathname.slice(1), clip: { x: 0, y: 0, width: 1200, height: 630 } })
   console.log('og', name)

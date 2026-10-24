@@ -43,3 +43,11 @@ Verification: `node scripts/seo-verify.mjs [base-url]` runs 785 checks (title/de
 
 ## Judgment calls (also in SEO_TODO.md)
 Kattankulathur spelling · NeuroVibe "rover" vs "wheelchair" · 58-char home title · AgentHub vs Agent Marketplace · no DGTL mention · SplitFair links to a GitHub search · `vite preview` can't serve the static pages (it falls back to the SPA), so verification uses a static file server.
+
+## Round 2 (corrections + content pages)
+- Hero H1, perf target (85+; home measures 93–95), TODOs only in HTML comments, rishit.site untouched: already how the build works; `seo-verify` now fails if `TODO` appears outside a comment.
+- The text blocks under the app are now `rishit_os` windows (`about.md`, `skills.json`, `projects.log`, `wins.txt`, `research.md`, `experience.log`, `faq.txt`, `contact.sh`) with a lowercase line after the plain facts. Visible FAQ still equals the JSON-LD word for word (13 entries).
+- Facts: campus is "SRM Institute of Science and Technology, Kattankulathur" everywhere; availability string is one constant (`AVAIL`); JSON-LD and llms.txt say "9,000+ contributions in 2026" (static), the live count stays on the page only.
+- New pages: `/how-its-built` (1,700+ words, Article + HowTo, 6 real screenshots from `scripts/built-shots.mjs`) and `/portfolio-design-tips` (10 tips, Article + FAQPage). Both prerendered, in the sitemap and llms.txt, own OG image, link to home and projects.
+- Project pages are never padded: the 300-word target is now a note, not a failure (all nine are still 300+).
+- Home measured: perf 93, a11y/bp/seo 100. New pages 100 ×4. `seo-verify`: 956 checks.

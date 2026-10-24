@@ -25,4 +25,16 @@ code{background:#1d1912;padding:1px 6px}
 .faq dd{margin:2px 0 0}
 .foot{max-width:860px;margin:0 auto;padding:30px 5vw 60px;border-top:2px dashed #26231d;font-size:13px;color:#a39b86}
 .foot a{color:#f2ecdf}
+.win{border:2px solid #f2ecdf;box-shadow:6px 6px 0 #000;background:#100e0b;margin:26px 0}
+.win .tb{display:flex;align-items:center;gap:6px;padding:7px 12px;border-bottom:2px solid #f2ecdf;background:#1b1810;font-size:12px;color:#a39b86}
+.win .tb i{width:10px;height:10px;border-radius:50%;background:#3a352b}
+.win .tb span{margin-left:8px}
+.win .bd{padding:4px 20px 18px}
+.win h2{border-top:0;margin-top:14px}
+.win figure{margin:18px 0}
+figcaption{font-size:12px;color:#8c8574;margin-top:6px}
+.v{color:#39d353}
+.ex{font-size:14px}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{border:2px solid #ffb000;padding:3px 12px;text-decoration:none;font-size:13px}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}

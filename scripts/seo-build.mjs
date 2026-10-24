@@ -3,7 +3,8 @@
 //  - dist/about, /skills, /how-its-built, /projects/<slug>, 404.html: static html pages
 //  - dist/sitemap.xml, llms.txt, llms-full.txt, humans.txt
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
-import { SITE, NAME, LINKS, INTRO, HOME, ABOUT, SKILLS, BUILT, PROJECTS, WINS, SKILL_GROUPS, FAQ, ALL_PAGES, projectUrl } from '../seo/data.mjs'
+import { SITE, NAME, LINKS, INTRO, CAMPUS, AVAIL, CONTRIB, TEMPLATE_REPO, FEATURED, PUBLISHED, HOME, ABOUT, SKILLS, BUILT, TIPS_PAGE, PROJECTS, WINS, SKILL_GROUPS, FAQ, ALL_PAGES, projectUrl } from '../seo/data.mjs'
+import { win, HOWTO, builtBody, TIPS, TIPS_FAQ, tipsBody } from '../seo/content.mjs'
 
 const DIST = new URL('../dist/', import.meta.url)
 const today = new Date().toISOString().slice(0, 10)
@@ -18,7 +19,8 @@ const stats = {}
 function head(pg) {
   const canon = url(pg.path), img = abs(pg.og)
   const isHome = pg.kind === 'home', isProject = pg.kind === 'project'
-  const ogType = isHome || pg.kind === 'about' ? 'profile' : isProject ? 'article' : 'website'
+  const isArticle = isProject || pg.kind === 'built' || pg.kind === 'tips'
+  const ogType = isHome || pg.kind === 'about' ? 'profile' : isArticle ? 'article' : 'website'
   return `<title>${esc(pg.title)}</title>
     <meta name="description" content="${esc(pg.desc)}" />
     <link rel="canonical" href="${canon}" />
@@ -36,7 +38,7 @@ function head(pg) {
     <meta property="og:image:alt" content="${esc(pg.h1)} — ${NAME}" />
     <meta property="og:locale" content="en_IN" />${ogType === 'profile' ? `
     <meta property="profile:first_name" content="Rishit" />
-    <meta property="profile:last_name" content="Tandon" />` : ''}${isProject ? `
+    <meta property="profile:last_name" content="Tandon" />` : ''}${isArticle ? `
     <meta property="article:author" content="${LINKS.github}" />
     <meta property="article:modified_time" content="${today}" />` : ''}
     <meta name="twitter:card" content="summary_large_image" />
@@ -61,8 +63,8 @@ const person = () => ({
   '@type': 'Person', '@id': PERSON_ID, name: NAME, givenName: 'Rishit', familyName: 'Tandon', url: SITE + '/',
   image: SITE + '/og/home.png', // TODO(rishit): swap for a real headshot (public/headshot.webp)
   jobTitle: 'AI/ML Engineer & Full-Stack Developer',
-  description: INTRO,
-  alumniOf: { '@type': 'CollegeOrUniversity', name: 'SRM Institute of Science and Technology', url: 'https://www.srmist.edu.in', address: { '@type': 'PostalAddress', addressLocality: 'Kattankulathur, Chennai', addressCountry: 'IN' } },
+  description: `${INTRO} ${CONTRIB} on GitHub.`,
+  alumniOf: { '@type': 'CollegeOrUniversity', name: CAMPUS, url: 'https://www.srmist.edu.in', address: { '@type': 'PostalAddress', addressLocality: 'Kattankulathur, Chennai', addressCountry: 'IN' } },
   knowsAbout: ['AI', 'Machine Learning', 'Computer Vision', 'RAG', 'LLM Agents', 'Full-Stack Development', 'Embedded Systems', 'Robotics', 'Drones', 'Python', 'React', 'Next.js'],
   award: ['6 first-place finishes at hackathons and expos, including SUTD Smorphi (Singapore), CismoHack, ML Project Expo, South India Conclave, Semiconductor Expo and NWC Expo', '12+ hackathon and expo wins in total'],
   sameAs: [LINKS.github, LINKS.linkedin, LINKS.hub, SITE + '/'],
@@ -98,10 +100,27 @@ function simpleLd(pg, crumbName) {
   ] })
 }
 
+function articleLd(pg, crumbName, extra = []) {
+  return ld({ '@context': 'https://schema.org', '@graph': [
+    { '@type': 'Article', '@id': url(pg.path) + '#article', url: url(pg.path), mainEntityOfPage: url(pg.path), headline: pg.h1.slice(0, 110), name: pg.title, description: pg.desc, inLanguage: 'en', image: SITE + pg.og, datePublished: PUBLISHED, dateModified: today, author: { '@id': PERSON_ID }, publisher: { '@id': PERSON_ID }, isPartOf: { '@id': SITE + '/#website' } },
+    ...extra,
+    { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' }, { '@type': 'ListItem', position: 2, name: crumbName, item: url(pg.path) }] },
+    { ...person() },
+  ] })
+}
+const howtoNode = () => ({ '@type': 'HowTo', '@id': url('/how-its-built') + '#howto', name: HOWTO.name, description: HOWTO.desc, step: HOWTO.steps.map(([n, t], i) => ({ '@type': 'HowToStep', position: i + 1, name: n, text: t, url: url('/how-its-built') })) })
+
 /* ----------------------------------------------------------- page chrome */
-const NAV = [['/', 'Interactive portfolio'], ['/about', 'About'], ['/skills', 'Skills'], ['/#projects', 'Projects'], ['/how-its-built', 'How it is built']]
+const NAV = [['/', 'Interactive portfolio'], ['/about', 'About'], ['/skills', 'Skills'], ['/#projects', 'Projects'], ['/how-its-built', 'How it is built'], ['/portfolio-design-tips', 'Design tips']]
 const header = () => `<header class="top"><a class="brand" href="/">rishit_os</a><nav aria-label="Main">${NAV.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}</nav></header>`
-const footer = () => `<footer class="foot"><p>${NAME} — final-year B.Tech CSE at SRM IST, graduating 2027. Open to SDE and AI/ML engineer roles from 2027.</p><p><a href="mailto:${LINKS.email}">${LINKS.email}</a> · <a href="${LINKS.github}" rel="me">GitHub</a> · <a href="${LINKS.linkedin}" rel="me">LinkedIn</a> · <a href="${LINKS.hub}" rel="me">rishit.site</a></p></footer>`
+const footer = () => `<footer class="foot"><p>${NAME} — final-year B.Tech CSE at SRM IST, graduating 2027. ${AVAIL[0].toUpperCase() + AVAIL.slice(1)}.</p>${badges()}<p><a href="mailto:${LINKS.email}">${LINKS.email}</a> · <a href="${LINKS.github}" rel="me">GitHub</a> · <a href="${LINKS.linkedin}" rel="me">LinkedIn</a> · <a href="${LINKS.hub}" rel="me">rishit.site</a></p></footer>`
+// hidden until filled in (seo/data.mjs): open-source template badge + gallery badges
+const badges = () => {
+  const out = []
+  if (TEMPLATE_REPO) out.push(`<a class="badge" href="${TEMPLATE_REPO}" rel="noopener">open source: get the template</a>`)
+  for (const f of FEATURED) out.push(`<a class="badge" href="${f.url}" rel="noopener">featured on ${esc(f.name)}</a>`)
+  return out.length ? `<p class="badges">${out.join(' ')}</p>` : '<!-- TODO(rishit): open-source + featured-on badges render here once TEMPLATE_REPO / FEATURED are set in seo/data.mjs -->'
+}
 const li = (arr) => `<ul>${arr.map((x) => `<li>${x}</li>`).join('')}</ul>`
 const projectLinks = (list) => li(list.map((p) => `<a href="/projects/${p.slug}">${esc(p.name)}</a> — ${esc(p.short)}`))
 
@@ -169,7 +188,7 @@ function aboutPage() {
 <p class="lead">${esc(INTRO)}</p>
 <figure><img src="/og/about.png" alt="${NAME}: AI/ML engineer and full-stack developer, SRM IST" width="1200" height="630" fetchpriority="high" decoding="async" /></figure>
 <h2>Education</h2>
-<p>I am in the final year of a B.Tech in Computer Science and Engineering at SRM Institute of Science and Technology in Kattankulathur, Chennai (2023 to 2027), with a CGPA of 9.2. Two electives mattered to me most: Metaverse, where I placed in the top 80 of my batch, and Responsible AI, top 120. Before SRM I studied at DPS Lucknow (class 12, 2023) and Jaipuria (class 10, 2021).</p>
+<p>I am in the final year of a B.Tech in Computer Science and Engineering at SRM Institute of Science and Technology, Kattankulathur (Chennai), from 2023 to 2027, with a CGPA of 9.2. Two electives mattered to me most: Metaverse, where I placed in the top 80 of my batch, and Responsible AI, top 120. Before SRM I studied at DPS Lucknow (class 12, 2023) and Jaipuria (class 10, 2021).</p>
 <h2>What I build</h2>
 <p>My work sits where software meets the physical world. I build AI agents and document-intelligence systems, drones and robots, smart glasses and brain-computer interfaces, and full-stack web products. A few of them:</p>
 ${projectLinks(PROJECTS)}
@@ -183,9 +202,9 @@ ${projectLinks(PROJECTS)}
 <p>I have 12+ hackathon and expo wins, six of them first places.</p>
 ${winsHtml()}
 <h2>Open source</h2>
-<p>I have 100+ public repositories on <a href="${LINKS.github}" rel="me">GitHub</a> and more than 9,000 contributions in the last year. The portfolio's GitHub world reads that data live.</p>
+<p>I have 100+ public repositories on <a href="${LINKS.github}" rel="me">GitHub</a> and ${CONTRIB}. The portfolio's GitHub world reads that data live.</p>
 <h2>Looking for</h2>
-<p>I am looking for software development engineer (SDE) and AI/ML engineer roles from 2027, and I am open to internships before that. If you are building with AI agents, computer vision, robotics or full-stack products, I would like to hear from you.</p>
+<p>I am ${AVAIL}, meaning software development engineer (SDE) and AI/ML engineer roles. If you are building with AI agents, computer vision, robotics or full-stack products, I would like to hear from you.</p>
 <h2>Contact</h2>
 <p>Email <a href="mailto:${LINKS.email}">${LINKS.email}</a>, find me on <a href="${LINKS.linkedin}" rel="me">LinkedIn</a>, or start at <a href="${LINKS.hub}" rel="me">rishit.site</a>, where everything I make is connected.</p>
 <!-- TODO(rishit): add a real headshot (public/headshot.webp) and set it as the Person image; add one line on what you lead at the ISD Lab -->
@@ -222,20 +241,22 @@ function builtPage(lh) {
   const body = `<article>
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span>How it is built</span></nav>
 <h1>${BUILT.h1}</h1>
-<p class="lead">An interactive developer portfolio website, built by hand: nine "worlds", a real terminal, physics you can throw things around in, and live GitHub data.</p>
-<h2>The stack</h2>
-${li(['<strong>Vite + React 19</strong> for the app shell and routing of the worlds.', '<strong>React Three Fiber and Three.js</strong> for the 3D: the robot, the contribution skyline, the repo galaxy, the globe.', '<strong>GSAP and ScrollTrigger</strong> for the animation, with a different signature motion for every world.', '<strong>Lenis</strong> for smooth scrolling on desktop; phones use native scrolling.', '<strong>Matter.js</strong> for the workshop pegboard physics.', '<strong>Vercel</strong> for hosting, with a post-build script that prerenders the SEO pages.'])}
-<h2>Design decisions</h2>
-<p>Every section is its own world with its own palette, fonts and signature interaction: a paper desk for education, a mission-control screen for research, a CRT arcade for hackathon wins, a pegboard for skills, a gallery for certificates and a boarding pass for contact. A dock and a menu bar make the whole thing feel like one small operating system, rishit_os.</p>
-<h2>Performance</h2>
-<p>One shared animation clock drives smooth scrolling, scroll animations and every canvas. Each world is a separate lazy chunk that loads only when you scroll near it. WebGL canvases only render while visible and are capped in resolution. The heavy 3D loads after first paint so it never blocks the largest contentful paint, and everything respects <code>prefers-reduced-motion</code>.</p>
-${lh ? `<p>Lighthouse (mobile, simulated throttling) on the production build: Performance <strong>${lh.performance}</strong>, Accessibility <strong>${lh.accessibility}</strong>, Best Practices <strong>${lh['best-practices']}</strong>, SEO <strong>${lh.seo}</strong>.</p>` : '<!-- lighthouse scores are filled in by the final verification run -->'}
-<h2>Crawlable by design</h2>
-<p>The interactive part is JavaScript, so the build also writes plain HTML for every page, with structured data (Person, ProfilePage, FAQ and project schema), a sitemap, <code>llms.txt</code> for AI assistants and one crawlable page per project.</p>
-<p>Back to the <a href="/">interactive portfolio</a>, or read about the <a href="/about">person behind it</a>.</p>
+${builtBody(lh)}
 </article>`
   stats[pg.path] = words(body)
-  return shell(pg, body, simpleLd(pg, 'How it is built'), { preload: null })
+  return shell(pg, body, articleLd(pg, 'How it is built', [howtoNode()]), { preload: null })
+}
+
+function tipsPage() {
+  const pg = { ...TIPS_PAGE, kind: 'tips' }
+  const faqLd = { '@type': 'FAQPage', '@id': url(pg.path) + '#faq', mainEntity: TIPS_FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }
+  const body = `<article>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span>Design tips</span></nav>
+<h1>${TIPS_PAGE.h1}</h1>
+${tipsBody()}
+</article>`
+  stats[pg.path] = words(body)
+  return shell(pg, body, articleLd(pg, 'Design tips', [faqLd]), { preload: null })
 }
 
 function notFound() {
@@ -259,14 +280,14 @@ function home() {
     .replace('<!--SEO_HEAD-->', head({ ...HOME, kind: 'home' }) + '\n    ' + homeLd())
   const fallback = `<div class="ssr"><h1>${esc(HOME.h1)}</h1><p>${esc(INTRO)}</p><nav aria-label="Main"><a href="/about">About</a> · <a href="/skills">Skills</a> · <a href="/#projects">Projects</a> · <a href="${LINKS.github}">GitHub</a> · <a href="${LINKS.linkedin}">LinkedIn</a></nav></div>`
   const sections = `<div id="seo-home" role="region" aria-label="About Rishit Tandon, in plain text">
-<section id="about"><h2>About Rishit Tandon</h2><p>${esc(INTRO)} <a href="/about">Read the full story</a>.</p></section>
-<section id="skills"><h2>Skills</h2><div class="cols">${skillsHtml()}</div><p><a href="/skills">All skills, and where each one shows up</a></p></section>
-<section id="projects"><h2>Projects</h2>${projectLinks(PROJECTS)}</section>
-<section id="wins"><h2>Hackathon wins and achievements</h2><p>12+ hackathon and expo wins, 6 of them first places.</p>${winsHtml()}</section>
-<section id="research"><h2>Research</h2><p>Research intern at SRM IST with NIDM (India's National Institute of Disaster Management): a machine learning early-warning pipeline for glacial lake outburst floods in the Upper Tista Basin, with alert latency cut by 40%. <a href="/projects/glof-early-warning">Read the project</a>.</p></section>
-<section id="experience"><h2>Experience</h2>${li(['Research intern, SRM IST × NIDM (GLOF early warning, Upper Tista Basin).', 'Student convenor, RoboFest 2.0, one of the biggest international events at SRM; built the judging, attendance and seat-allocation portal.', 'Technical lead, Intelligent System Design (ISD) Lab, SRM IST.'])}</section>
-<section id="faq"><h2>Frequently asked questions</h2>${faqHtml()}</section>
-<section id="contact"><h2>Contact Rishit Tandon</h2><p>Email <a href="mailto:${LINKS.email}">${LINKS.email}</a> · <a href="${LINKS.github}" rel="me">GitHub</a> · <a href="${LINKS.linkedin}" rel="me">LinkedIn</a> · <a href="${LINKS.hub}" rel="me">rishit.site</a> · <a href="/how-its-built">How this portfolio is built</a></p></section>
+${win('about.md', `<h2>About Rishit Tandon</h2><p>${esc(INTRO)} <a href="/about">Read the full story</a>.</p><p class="v">that is the plain version. the fun version is everything above this.</p>${badges()}`, 'about')}
+${win('skills.json', `<h2>Skills</h2><div class="cols">${skillsHtml()}</div><p class="v">i pick the tool that fits the job, not the one with the nicest logo. <a href="/skills">all skills, and where each one shows up</a></p>`, 'skills')}
+${win('projects.log', `<h2>Projects</h2>${projectLinks(PROJECTS)}<p class="v">nine of them have their own page. there are 100+ public repos on github in various states of finished.</p>`, 'projects')}
+${win('wins.txt', `<h2>Hackathon wins and achievements</h2><p>12+ hackathon and expo wins, 6 of them first places.</p>${winsHtml()}<p class="v">yes, i keep count.</p>`, 'wins')}
+${win('research.md', `<h2>Research</h2><p>Research intern at SRM IST with NIDM (India's National Institute of Disaster Management): a machine learning early-warning pipeline for glacial lake outburst floods in the Upper Tista Basin, with alert latency cut by 40%. <a href="/projects/glof-early-warning">Read the project</a>.</p><p class="v">the guided version, with a globe and a lake, is in mission_ctrl.</p>`, 'research')}
+${win('experience.log', `<h2>Experience</h2>${li(['Research intern, SRM IST × NIDM (GLOF early warning, Upper Tista Basin).', 'Student convenor, RoboFest 2.0, one of the biggest international events at SRM; built the judging, attendance and seat-allocation portal.', 'Technical lead, Intelligent System Design (ISD) Lab, SRM IST.'])}`, 'experience')}
+${win('faq.txt', `<h2>Frequently asked questions</h2>${faqHtml()}`, 'faq')}
+${win('contact.sh', `<h2>Contact Rishit Tandon</h2><p>Email <a href="mailto:${LINKS.email}">${LINKS.email}</a> · <a href="${LINKS.github}" rel="me">GitHub</a> · <a href="${LINKS.linkedin}" rel="me">LinkedIn</a> · <a href="${LINKS.hub}" rel="me">rishit.site</a></p><p class="v">${esc(AVAIL[0].toUpperCase() + AVAIL.slice(1))}. read <a href="/how-its-built">how this portfolio is built</a> or the <a href="/portfolio-design-tips">design tips</a>.</p>`, 'contact')}
 </div>`
   if (!html.includes('<div id="root"></div>')) throw new Error('root marker missing in dist/index.html')
   html = html.replace('<div id="root"></div>', `<div id="root">${fallback}</div>\n    ${sections}`)
@@ -281,12 +302,14 @@ function files() {
   const L = (arr) => arr.join('\n')
   write('llms.txt', L([
     `# ${NAME}`, '',
-    `> ${INTRO}`, '',
+    `> ${INTRO} ${CONTRIB} on GitHub.`, '',
     '## Key pages',
     `- [Home — interactive portfolio](${SITE}/): the main portfolio, nine interactive worlds`,
     `- [About](${SITE}/about): background, education, research, leadership, achievements`,
     `- [Skills](${SITE}/skills): AI/ML, full-stack, embedded and robotics skills`,
-    `- [How this portfolio is built](${SITE}/how-its-built): stack and design decisions`, '',
+    `- [How this portfolio is built](${SITE}/how-its-built): case study of the OS-style interactive portfolio: concept, React/Three.js/GSAP stack, performance, easter eggs, before and after`,
+    `- [Portfolio design tips](${SITE}/portfolio-design-tips): ten practical tips for a developer portfolio that does not look like a template`,
+    ...(TEMPLATE_REPO ? [`- [Portfolio template (open source)](${TEMPLATE_REPO}): the template behind this site`] : []), '',
     '## Projects',
     ...PROJECTS.map((p) => `- [${p.name}](${projectUrl(p)}): ${p.short}`), '',
     '## Skills',
@@ -313,6 +336,7 @@ home()
 write('about/index.html', aboutPage())
 write('skills/index.html', skillsPage())
 write('how-its-built/index.html', builtPage(lh))
+write('portfolio-design-tips/index.html', tipsPage())
 for (const p of PROJECTS) write(`projects/${p.slug}/index.html`, projectPage(p))
 write('404.html', notFound())
 files()
@@ -321,7 +345,9 @@ files()
 const bad = []
 if (HOME.desc.length < 150 || HOME.desc.length > 160) bad.push(`home description is ${HOME.desc.length} chars (want 150-160)`)
 for (const p of ALL_PAGES()) if (p.desc.length > 160 || p.desc.length < 120) bad.push(`${p.path} description ${p.desc.length} chars`)
-for (const p of PROJECTS) if (stats['/projects/' + p.slug] < 300) bad.push(`/projects/${p.slug} only ${stats['/projects/' + p.slug]} words (want 300+)`)
+// short project pages are published as they are: never padded, never filled with todo text
+for (const p of PROJECTS) if (stats['/projects/' + p.slug] < 300) console.log(`note: /projects/${p.slug} is ${stats['/projects/' + p.slug]} words (short on purpose, no padding)`)
+if (stats['/how-its-built'] < 1200) bad.push(`/how-its-built only ${stats['/how-its-built']} words (want 1200+)`)
 if (stats['/about'] < 400) bad.push(`/about only ${stats['/about']} words (want 400+)`)
 console.log('seo-build ok:', Object.entries(stats).map(([k, v]) => `${k} ${v}w`).join(' | '))
 if (bad.length) { console.warn('SEO WARNINGS:\n - ' + bad.join('\n - ')) }

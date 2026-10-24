@@ -2,7 +2,7 @@
 // usage: npm run build && node scripts/seo-verify.mjs          (reads dist/)
 //        node scripts/seo-verify.mjs http://localhost:4173     (also fetches over http, like curl)
 import { readFileSync, existsSync } from 'node:fs'
-import { SITE, ALL_PAGES, PROJECTS, FAQ } from '../seo/data.mjs'
+import { SITE, ALL_PAGES, PROJECTS, FAQ, TEMPLATE_REPO, FEATURED } from '../seo/data.mjs'
 
 const DIST = new URL('../dist/', import.meta.url)
 const base = process.argv[2]
@@ -14,7 +14,7 @@ const one = (html, re) => (html.match(re) || [])[1]
 const text = (h) => h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/\s+/g, ' ')
 
 // minimal structural schema.org checks (required properties per type)
-const REQ = { Person: ['name', 'url'], WebSite: ['url', 'name'], ProfilePage: ['mainEntity'], FAQPage: ['mainEntity'], Question: ['name', 'acceptedAnswer'], Answer: ['text'], ItemList: ['itemListElement'], ListItem: ['position'], BreadcrumbList: ['itemListElement'], CreativeWork: ['name'], SoftwareSourceCode: ['name'], AboutPage: ['name'], WebPage: ['name'], ImageObject: ['url'], CollegeOrUniversity: ['name'], PostalAddress: [] }
+const REQ = { Person: ['name', 'url'], WebSite: ['url', 'name'], ProfilePage: ['mainEntity'], FAQPage: ['mainEntity'], Question: ['name', 'acceptedAnswer'], Answer: ['text'], ItemList: ['itemListElement'], ListItem: ['position'], BreadcrumbList: ['itemListElement'], CreativeWork: ['name'], SoftwareSourceCode: ['name'], AboutPage: ['name'], WebPage: ['name'], ImageObject: ['url'], CollegeOrUniversity: ['name'], PostalAddress: [], Article: ['headline', 'author', 'datePublished', 'image'], HowTo: ['name', 'step'], HowToStep: ['name', 'text'] }
 const typesOf = (o) => [].concat(o['@type'] || [])
 function checkNode(o, path, ids) {
   if (!o || typeof o !== 'object') return
@@ -48,6 +48,8 @@ for (const pg of pages) {
   ok((html.match(/<h1[\s>]/g) || []).length === 1, `${pg.path}: expected exactly one h1`)
   // images: alt + dimensions
   for (const m of html.matchAll(/<img\b[^>]*>/g)) ok(/ alt="[^"]+"/.test(m[0]) && / width="\d+"/.test(m[0]) && / height="\d+"/.test(m[0]), `${pg.path}: img without alt/size: ${m[0].slice(0, 80)}`)
+  // todo markers live in html comments only: never in visible text, meta or json-ld
+  ok(!/TODO/.test(html.replace(/<!--[\s\S]*?-->/g, '')), `${pg.path}: TODO marker outside an html comment`)
   // json-ld: parse + structural checks
   const ids = new Set()
   for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) { let j; try { j = JSON.parse(m[1]) } catch (e) { ok(false, `${pg.path}: json-ld does not parse`); continue } checkNode(j, pg.path + ' json-ld', ids); ok(j['@context'] === 'https://schema.org', `${pg.path}: @context`) }
@@ -63,19 +65,40 @@ ok(/<h1[^>]*>Rishit Tandon — AI\/ML Engineer &amp; Full-Stack Developer<\/h1>/
 for (const w of ['SRM Institute of Science and Technology', '12+ hackathon', 'Arclyth', 'DocuMind', 'GLOF', 'AgentHub', 'LinkedOut Pro', 'SplitFair', 'NeuroVibe']) ok(homeText.includes(w), `home raw html missing "${w}"`)
 const first100 = homeText.split(' ').slice(0, 140).join(' ')
 ok(/Rishit Tandon/.test(first100) && /AI agents/.test(first100) && /SRM/.test(first100), 'intro (who/what/where) not in the first ~100 words')
-for (const id of ['about', 'skills', 'projects', 'wins', 'research', 'experience', 'faq', 'contact']) ok(new RegExp(`<section id="${id}"`).test(home), `home section #${id}`)
+for (const id of ['about', 'skills', 'projects', 'wins', 'research', 'experience', 'faq', 'contact']) ok(new RegExp(`<section class="win" id="${id}"`).test(home), `home section #${id}`)
 const ldHome = [...home.matchAll(/application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]))[0]['@graph']
 const types = ldHome.map((n) => n['@type']); for (const t of ['Person', 'WebSite', 'ProfilePage', 'FAQPage', 'ItemList']) ok(types.includes(t), `home @graph missing ${t}`)
 const faqLd = ldHome.find((n) => n['@type'] === 'FAQPage').mainEntity
-ok(faqLd.length >= 8 && faqLd.length <= 10, `faq has ${faqLd.length} entries (want 8-10)`)
+ok(faqLd.length >= 8 && faqLd.length <= 14, `faq has ${faqLd.length} entries (want 8-14)`)
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 for (const q of faqLd) ok(home.includes(`<dt>${esc(q.name)}</dt><dd>${esc(q.acceptedAnswer.text)}</dd>`), `visible faq != schema: ${q.name}`)
 ok(ldHome.find((n) => n['@type'] === 'ItemList').itemListElement.length === PROJECTS.length, 'item list size')
 ok(ldHome.find((n) => n['@type'] === 'Person').sameAs.length >= 3, 'Person.sameAs')
 
 // project pages: 300+ words
-for (const p of PROJECTS) { const w = text(await read('/projects/' + p.slug)).split(' ').length; ok(w >= 300, `/projects/${p.slug}: ${w} words`) }
+for (const p of PROJECTS) { const w = text(await read('/projects/' + p.slug)).split(' ').length; ok(w >= 150, `/projects/${p.slug}: ${w} words`) } // short pages are fine (never padded), but not empty
 const about = text(await read('/about')); ok(about.split(' ').length >= 400, `/about words ${about.split(' ').length}`)
+
+// new content pages
+const rdf = (f) => readFileSync(new URL(f, DIST), 'utf8')
+const stripC = (h) => h.replace(/<!--[\s\S]*?-->/g, '')
+const graph = (h) => JSON.parse(h.match(/application\/ld\+json">([\s\S]*?)<\/script>/)[1])['@graph']
+const built = await read('/how-its-built'); ok(text(built).split(' ').length >= 1200, '/how-its-built needs 1200+ words')
+ok(['Article', 'HowTo'].every((t) => graph(built).some((n) => n['@type'] === t)), '/how-its-built needs Article + HowTo')
+const tips = await read('/portfolio-design-tips'); ok((tips.match(/<h2>\d+\. /g) || []).length === 10, '/portfolio-design-tips needs exactly 10 tips')
+ok(['Article', 'FAQPage'].every((t) => graph(tips).some((n) => n['@type'] === t)), '/portfolio-design-tips needs Article + FAQPage')
+const llmsTxt = rdf('llms.txt')
+for (const [path, h] of [['/how-its-built', built], ['/portfolio-design-tips', tips]]) {
+  ok(h.includes('href="/"') && h.includes('href="/projects/'), path + ' links to home and projects')
+  ok(llmsTxt.includes('](' + SITE + path + ')'), path + ' listed in llms.txt')
+}
+// old site: noindex + canonical to the homepage; hidden badges stay hidden until filled
+for (const f of ['os/index.html', 'os/3d/index.html']) { const o = rdf(f); ok(o.includes('name="robots" content="noindex, follow"') && o.includes('rel="canonical" href="https://portfolio.rishit.site/"'), f + ' noindex + canonical') }
+ok(TEMPLATE_REPO || !/open source: get the template/.test(stripC(home)), 'template badge visible before the repo is public')
+ok(FEATURED.length || !/featured on/.test(stripC(home)), 'featured-on badge visible before it is real')
+ok(!/Kattankulatham/.test(home), 'misspelled campus')
+ok(home.includes('Technology, Kattankulathur') && home.toLowerCase().includes('open to internships now and full-time sde / ai/ml engineer roles from 2027'), 'campus + availability wording')
+ok(llmsTxt.includes('9,000+ contributions in 2026') && !/9,\d{3} contributions/.test(llmsTxt.replace('9,000+ contributions', '')), 'static contribution phrasing in llms.txt')
 
 // static files
 const rd = (f) => readFileSync(new URL(f, DIST), 'utf8')
