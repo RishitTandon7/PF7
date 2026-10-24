@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import Terminal from './Terminal'
-import Robot from './Robot'
+const Robot = lazy(() => import('./Robot')) // three.js + r3f: loaded after first paint so it can't block LCP
 import { BOOT_STACK, WINS, ME } from '../data/content'
-import { loadGithub } from '../lib/github'
+import { loadGithub, quickGithub } from '../lib/github'
 import { on, emit } from '../lib/bus'
 import { unlock } from '../lib/store'
 import { stopScroll, velocity } from '../lib/scroll'
@@ -18,7 +18,7 @@ function Bios({ done }) {
 
   useEffect(() => {
     let alive = true
-    const gh = loadGithub().catch(() => null)
+    const gh = quickGithub().catch(() => null)
     const script = [
       ['RISHIT_OS BIOS v4.2.0   (c) 2026 rishit tandon. some rights reserved.', 120],
       ['cpu0: caffeine-powered @ 3 cups      mem: 16384K ... ', 60, 'ok'],
@@ -63,7 +63,8 @@ function Bios({ done }) {
     window.addEventListener('keydown', k)
     return () => window.removeEventListener('keydown', k)
   }, [])
-  useEffect(() => { root.current.scrollTop = root.current.scrollHeight }, [lines])
+  // keep the newest line in view by moving the text with a transform (a scrollTop change counts as layout shift, a transform does not)
+  useEffect(() => { const el = root.current, pre = el.firstChild; const room = el.clientHeight - 150; pre.style.transform = `translateY(${-Math.max(0, pre.offsetHeight - room)}px)` }, [lines])
 
   return (
     <div className="bios" ref={root} onClick={finish}>
@@ -122,7 +123,7 @@ function Headline({ ready }) {
   }, vis)
 
   return (
-    <p className="headline" ref={root} aria-label="i write code that writes code, build robots, and win hackathons.">
+    <p className="headline" role="img" ref={root} aria-label="i write code that writes code, build robots, and win hackathons.">
       {HEAD.map((line, li) => (
         <span className="hl" key={li} aria-hidden>
           {line.join(' ').split(' ').map((w, wi) => (
@@ -175,7 +176,26 @@ export default function Hero() {
   const [gh, setGh] = useState(null)
   const root = useRef()
 
-  useEffect(() => { loadGithub().then(setGh) }, [])
+  useEffect(() => {
+    quickGithub().then(setGh)
+    // upgrade to live numbers on the first real interaction (a click, key, touch or scroll), never during load
+    const live = () => loadGithub().then(setGh)
+    const evs = ['pointerdown', 'keydown', 'touchstart', 'scroll']
+    evs.forEach((e) => addEventListener(e, live, { once: true, passive: true }))
+    return () => evs.forEach((e) => removeEventListener(e, live))
+  }, [])
+  // the 3d robot (three.js + r3f, ~1mb) mounts 2.5s after the boot screen is gone, or immediately if the visitor interacts first.
+  // it is never part of the first load, so it can't block the first paint or add to blocking time.
+  const [robotOn, setRobotOn] = useState(false)
+  useEffect(() => {
+    if (phase !== 'desk' || robotOn) return
+    const evs = ['pointerdown', 'touchstart', 'keydown', 'wheel']
+    let t
+    const go = () => { evs.forEach((e) => removeEventListener(e, go)); clearTimeout(t); ('requestIdleCallback' in window ? requestIdleCallback(() => setRobotOn(true), { timeout: 800 }) : setTimeout(() => setRobotOn(true), 100)) }
+    t = setTimeout(go, 2500)
+    evs.forEach((e) => addEventListener(e, go, { passive: true }))
+    return () => { evs.forEach((e) => removeEventListener(e, go)); clearTimeout(t) }
+  }, [phase, robotOn])
   useEffect(() => on('reboot', () => { try { sessionStorage.removeItem('rt_booted') } catch {} setPhase('boot') }), [])
   useEffect(() => { stopScroll(phase === 'boot'); return () => stopScroll(false) }, [phase])
   const bootDone = useCallback(() => { try { sessionStorage.setItem('rt_booted', '1') } catch {} setPhase('desk') }, [])
@@ -216,7 +236,7 @@ export default function Hero() {
         </div>
 
         <div className="robot-wrap">
-          <Robot />
+          {robotOn ? <Suspense fallback={<div className="robot-grab" />}><Robot /></Suspense> : <div className="robot-grab" />}
           <svg className="doodle d-arrow" viewBox="0 0 160 110" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden>
             <path d="M6 14c30-14 78-8 104 22 10 12 14 28 12 52" /><path d="M105 78l17 20 18-24" />
           </svg>

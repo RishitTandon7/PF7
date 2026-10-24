@@ -1,0 +1,22 @@
+{
+  "before": {
+    "performance": 50,
+    "accessibility": 95,
+    "best-practices": 96,
+    "seo": 91,
+    "lcp": "4.6 s",
+    "fcp": "4.3 s",
+    "tbt": "170 ms",
+    "cls": "0.335"
+  },
+  "after": {
+    "performance": 99,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "lcp": "1.2 s",
+    "fcp": "0.8 s",
+    "tbt": "30 ms",
+    "cls": "0.065"
+  }
+}

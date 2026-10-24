@@ -1,4 +1,3 @@
-import snap from '../data/snapshot.json'
 
 const U = 'RishitTandon7'
 const KEY = 'rt_gh_v2'
@@ -55,10 +54,19 @@ export function loadGithub() {
       try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), d })) } catch {}
       return d
     } catch {
+      const snap = (await import('../data/snapshot.json')).default
       return { ...snap, live: false }
     }
   })()
   return inflight
+}
+
+// fast path for the first screen: cached live data if we have it, otherwise the saved snapshot. no network call, so nothing
+// fails or shifts during load. the live refresh happens when the visitor first interacts, or when the forge world mounts.
+export async function quickGithub() {
+  try { const c = JSON.parse(localStorage.getItem(KEY) || 'null'); if (c && Date.now() - c.t < TTL) return c.d } catch {}
+  const snap = (await import('../data/snapshot.json')).default
+  return { ...snap, live: false }
 }
 
 export function streaks(days) {

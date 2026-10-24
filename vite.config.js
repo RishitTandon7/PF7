@@ -14,11 +14,7 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules/three/')) return 'three'
-          if (id.includes('@react-three') || id.includes('three-stdlib') || id.includes('troika')) return 'r3f'
-          if (id.includes('matter-js')) return 'matter'
-        },
+        // no manual chunks: the bundler splits along the lazy imports, so react stays in the entry and three.js/r3f only load with the 3d scenes
       },
     },
   },

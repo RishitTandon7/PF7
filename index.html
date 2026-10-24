@@ -7,15 +7,20 @@
     <meta name="description" content="Rishit Tandon, final-year CSE student at SRM IST. AI/ML engineer and full-stack developer building AI agents, drones and smart glasses. 12+ hackathon wins." />
     <!--SEO_HEAD-->
     <!-- fonts: loaded without blocking first paint (the page paints in system fonts, then swaps) -->
+    <!-- the two fonts the first screen needs are self-hosted and preloaded, so the text never reflows when a web font arrives (that was most of the layout shift) -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/vt323-latin.woff2" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@400;500;700;800&family=Permanent+Marker&family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&family=Bebas+Neue&family=Playfair+Display:ital,wght@0,500;0,800;1,500&family=Chakra+Petch:wght@500;700&family=Archivo+Black&family=Barlow+Condensed:wght@500;700;800&family=Instrument+Serif:ital@0;1&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Courier+Prime:wght@400;700&family=Permanent+Marker&family=Press+Start+2P&family=Share+Tech+Mono&family=Bebas+Neue&family=Playfair+Display:ital,wght@0,500;0,800;1,500&family=Chakra+Petch:wght@500;700&family=Archivo+Black&family=Barlow+Condensed:wght@500;700;800&family=Instrument+Serif:ital@0;1&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" /></noscript>
     <style>
+      @font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:100 800;font-display:swap;src:url(/fonts/jetbrains-mono-latin.woff2) format('woff2')}
+      @font-face{font-family:'VT323';font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/vt323-latin.woff2) format('woff2')}
       /* critical css: the crawlable fallback + plain-text sections paint instantly, before any script or font arrives */
       html{background:#0b0b0c}
-      body{margin:0;background:#0b0b0c;color:#d8d0bd;font:14px/1.6 ui-monospace,Menlo,Consolas,monospace}
-      .ssr{padding:72px 6vw 40px;max-width:900px}
+      body{margin:0;background:#0b0b0c;color:#d8d0bd;font:14px/1.6 'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+      .ssr{padding:72px 6vw 40px;max-width:900px;min-height:140svh}
       .ssr h1{font-size:clamp(28px,5vw,52px);line-height:1.05;letter-spacing:-.04em;color:#f2ecdf;margin:0 0 16px}
       .ssr p{max-width:62ch;color:#c9c1ad}
       .ssr a,#seo-home a{color:#ffb000}

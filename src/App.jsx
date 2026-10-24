@@ -33,12 +33,15 @@ export default function App() {
     const idle = window.requestIdleCallback || ((f) => setTimeout(f, 400))
     let alive = true
     const warm = async () => {
-      await new Promise((r) => setTimeout(r, 2500))
+      await new Promise((r) => setTimeout(r, 1200))
       for (const w of WORLDS.slice(1)) { if (!alive) return; await new Promise((r) => idle(r)); try { await w.load() } catch {} }
       if (!window.matchMedia('(hover: none)').matches) fetch('/media/lhonak-zoom.mp4').catch(() => {})
       for (const u of ['/tex/earth.jpg', '/tex/earth_lights.png', '/media/lhonak-poster.jpg']) { const i = new Image(); i.src = u }
     }
-    warm()
+    // start the warm-up on the first real interaction, so nothing heavy competes with the first load and a visitor who is just reading is never slowed
+    const evs = ['pointerdown', 'touchstart', 'keydown', 'wheel', 'scroll']
+    const kick = () => { evs.forEach((e) => removeEventListener(e, kick)); warm() }
+    evs.forEach((e) => addEventListener(e, kick, { passive: true }))
 
     // which world is crossing the middle of the screen
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && setActive(e.target.dataset.world)), { rootMargin: '-50% 0px -50% 0px' })
@@ -84,7 +87,7 @@ export default function App() {
       <FX />
       <Pet />
       <CustomCursor />
-      <Analytics /> {/* vercel web analytics: visitor + page-view counts only. does nothing until enabled in the vercel dashboard */}
+      {/(^|.)(rishit.site|vercel.app)$/.test(location.hostname) && <Analytics />} {/* vercel web analytics: visitor + page-view counts only; the script only exists on vercel */}
     </>
   )
 }
