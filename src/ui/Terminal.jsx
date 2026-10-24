@@ -5,11 +5,12 @@ import { loadGithub, streaks } from '../lib/github'
 import { SECRETS } from '../lib/store'
 import { useFound } from '../lib/store'
 import { WORLDS } from '../worlds'
+import { scrollToEl } from '../lib/scroll'
 
 const T0 = Date.now()
 
 const FS = {
-  'about.txt': 'rishit tandon. final-year cse at srm ist.\nstudent convenor of robofest 2.0 (and built the portal that ran it).\nbuilds robots, ai glasses, bci wheelchairs, drone swarms and too many side projects.\n100+ repos. 9,000+ contributions this year. goal: 10,000+.',
+  'about.txt': 'rishit tandon. final-year cse at srm ist.\nstudent convenor of robofest 2.0 (and built the portal that ran it).\nbuilds robots, ai glasses, a bci rover, drone swarms and too many side projects.\n100+ repos. 9,000+ contributions this year. goal: 10,000+.',
   'wins.log': WINS.map((w) => `${w.place}  ${w.name}`).join('\n'),
   'skills.json': JSON.stringify(TOOLS.map((t) => t[0])),
   'contact.txt': `hub       rishit.site
@@ -20,7 +21,7 @@ email     ${ME.email}\ngithub    ${ME.github}\nlinkedin  ${ME.linkedin}\nwhatsap
   '.secrets': 'nice, you checked hidden files. that is the right instinct.\nthere are ' + SECRETS.length + ' secrets on this site. run `secrets` to see how many you have.',
 }
 
-const CMDS = ['help', 'ls', 'cd', 'cat', 'pwd', 'whoami', 'about', 'projects', 'wins', 'skills', 'contact', 'resume', 'github', 'open', 'clear', 'echo', 'date', 'uptime', 'history', 'neofetch', 'fortune', 'secrets', 'coffee', 'matrix', 'crash', 'sudo', 'exit']
+const CMDS = ['help', 'ls', 'cd', 'cat', 'pwd', 'whoami', 'about', 'projects', 'wins', 'skills', 'contact', 'resume', 'github', 'open', 'clear', 'echo', 'date', 'uptime', 'history', 'neofetch', 'fortune', 'secrets', 'coffee', 'matrix', 'crash', 'sudo', 'exit', 'readme']
 
 // [[label|url]] makes a link, {{id|label}} jumps to a world
 function Line({ text }) {
@@ -63,7 +64,7 @@ export default function Terminal() {
     const arg = a.join(' ')
     switch (c) {
       case 'help':
-        return out('commands:', '  about  projects  wins  skills  contact  resume  github', '  ls  cd  cat  pwd  whoami  open <world>  clear', '  neofetch  fortune  secrets  date  uptime  history', 'and a few that are not listed. i would try things.')
+        return out('commands:', '  about  projects  wins  skills  contact  resume  github', '  ls  cd  cat  pwd  whoami  open <world>  clear', '  neofetch  fortune  secrets  date  uptime  history  readme', 'and a few that are not listed. i would try things.')
       case 'ls': {
         const keys = Object.keys(node()).filter((k) => a.includes('-a') || !k.startsWith('.'))
         return out(keys.map((k) => (typeof node()[k] === 'object' ? k + '/' : k)).join('   '))
@@ -96,6 +97,12 @@ export default function Terminal() {
         const w = WORLDS.find((x) => x.id === arg || x.label === arg)
         if (!w) return out(`open: ${arg || '?'} — try: ${WORLDS.map((x) => x.id).join(', ')}`)
         out(`opening ${w.label}.app ...`); return emit('wipe', w.id)
+      }
+      case 'readme': {
+        const d = document.querySelector('#text-version details')
+        if (!d) return out('readme.txt: no such file')
+        d.open = true; out('opening readme.txt (the plain text version, at the very bottom) ...')
+        return setTimeout(() => scrollToEl(document.querySelector('#text-version'), false, 20), 150)
       }
       case 'clear': return setLines([])
       case 'echo': return out(arg)

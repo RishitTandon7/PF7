@@ -63,15 +63,15 @@ export const PROJECTS = [
     links: [{ t: 'github', u: 'https://github.com/RishitTandon7/A.I.S.G.R.' }],
   },
   {
-    id: 'neurovibe', n: '02', name: 'neurovibe', tag: 'bci wheelchair', cls: 'p-neuro',
-    problem: 'a wheelchair with a joystick is useless if you can\'t use your hands.',
-    built: 'a brain-computer-interface wheelchair. eeg in, intent classified, motors out. yes, it moves when you think at it.',
+    id: 'neurovibe', n: '02', name: 'neurovibe', tag: 'bci rover', cls: 'p-neuro',
+    problem: 'a joystick is useless if you can\'t use your hands.',
+    built: 'a brain-computer-interface rover. bioamp exg picks up the eeg, a 1d cnn on a raspberry pi decodes it, an esp32 drives the motors. yes, it moves when you think at it. an earlier version steered a wheelchair.',
     impact: 'mobility without hands. the one project i still get a little emotional about.',
-    tech: ['c++', 'eeg', 'signal processing', 'arduino'],
+    tech: ['1d cnn', 'eeg', 'raspberry pi', 'esp32', 'bioamp exg'],
     video: '1Srq_t-Rbzm9CPYDdRB-g8Yhbs1Diwa6S',
     links: [
       { t: 'neurovibe', u: 'https://github.com/RishitTandon7/NeuroVibe' },
-      { t: 'wheelchair', u: 'https://github.com/RishitTandon7/NeuroVibe-Wheelchair' },
+      { t: 'earlier wheelchair version', u: 'https://github.com/RishitTandon7/NeuroVibe-Wheelchair' },
     ],
   },
   {

@@ -1,7 +1,7 @@
 // verifies the production build the way a crawler sees it: raw html only, no javascript.
 // usage: npm run build && node scripts/seo-verify.mjs          (reads dist/)
 //        node scripts/seo-verify.mjs http://localhost:4173     (also fetches over http, like curl)
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { SITE, ALL_PAGES, PROJECTS, FAQ, TEMPLATE_REPO, FEATURED } from '../seo/data.mjs'
 
 const DIST = new URL('../dist/', import.meta.url)
@@ -92,8 +92,25 @@ for (const [path, h] of [['/how-its-built', built], ['/portfolio-design-tips', t
   ok(h.includes('href="/"') && h.includes('href="/projects/'), path + ' links to home and projects')
   ok(llmsTxt.includes('](' + SITE + path + ')'), path + ' listed in llms.txt')
 }
-// old site: noindex + canonical to the homepage; hidden badges stay hidden until filled
-for (const f of ['os/index.html', 'os/3d/index.html']) { const o = rdf(f); ok(o.includes('name="robots" content="noindex, follow"') && o.includes('rel="canonical" href="https://portfolio.rishit.site/"'), f + ' noindex + canonical') }
+// old site is gone: no /os in dist, no links to it, redirect lives in vercel.json, the new home is dev.rishit.site
+ok(!existsSync(new URL('os/', DIST)), 'dist/os must not exist')
+for (const f of ['index.html', 'how-its-built/index.html', 'llms.txt', 'llms-full.txt', 'sitemap.xml']) ok(!/(href="|\]\()\/os\b|portfolio\.rishit\.site\/os\b/.test(rdf(f)), f + ' links to /os')
+ok(built.includes('href="https://dev.rishit.site"') && llmsTxt.includes('https://dev.rishit.site'), 'old portfolio links to dev.rishit.site')
+const vj = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')).redirects
+ok(['/os', '/os/:path*'].every((src) => vj.some((r) => r.source === src && r.destination === 'https://dev.rishit.site' && r.permanent)), 'vercel.json: /os and /os/* 301 to dev.rishit.site')
+// "100+ public" must not appear anywhere in the build output (text files and js, not source maps)
+const walk = (d) => readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(new URL(e.name + '/', d)) : [new URL(e.name, d)]))
+let scanned = 0
+for (const u of walk(DIST)) if (/\.(html|txt|xml|json|js|css|webmanifest)$/.test(u.pathname)) { scanned++; ok(!/100\+\s+public/i.test(readFileSync(u, 'utf8')), 'found "100+ public" in ' + u.pathname) }
+ok(scanned > 10, 'scanned dist files')
+// the plain-text version: one section at the very end, a closed <details>, real server-rendered html, nothing hidden by css
+const tv = home.match(/<section id="text-version">[\s\S]*<\/section>/)
+ok(tv && home.trimEnd().match(/<\/section>\s*(<script[\s\S]*)?<\/body>/) !== null, 'text-version missing or not at the end of the page')
+ok(tv && /^<section id="text-version"><details><summary>\$ cat readme\.txt  \(plain text version for screen readers, search engines and the curious\)<\/summary>/.test(tv[0]) && !/<details[^>]* open/.test(tv[0]), 'text-version details/summary wrong or open by default')
+ok(tv && !/style="[^"]*(display|visibility|opacity|position|left|text-indent)/.test(tv[0]), 'inline hiding css inside text-version')
+const idx = home.match(/<style>[\s\S]*?<\/style>/g).join('')
+ok(!/#text-version[^{]*\{[^}]*(display:\s*none|visibility:\s*hidden|opacity:\s*0\b|left:\s*-|text-indent:\s*-)/.test(idx), 'css hides text-version')
+ok(['about.md', 'skills.json', 'projects.log', 'wins.txt', 'research.md', 'experience.log', 'faq.txt', 'contact.sh'].every((n) => tv && tv[0].includes('<span>' + n + '</span>')), 'all eight windows inside text-version')
 ok(TEMPLATE_REPO || !/open source: get the template/.test(stripC(home)), 'template badge visible before the repo is public')
 ok(FEATURED.length || !/featured on/.test(stripC(home)), 'featured-on badge visible before it is real')
 ok(!/Kattankulatham/.test(home), 'misspelled campus')

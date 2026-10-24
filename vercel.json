@@ -16,18 +16,23 @@
     },
     {
       "source": "/os",
-      "destination": "/os/",
-      "permanent": false
+      "destination": "https://dev.rishit.site",
+      "permanent": true
+    },
+    {
+      "source": "/os/:path*",
+      "destination": "https://dev.rishit.site",
+      "permanent": true
     },
     {
       "source": "/3d",
-      "destination": "/os/3d/",
-      "permanent": false
+      "destination": "https://dev.rishit.site",
+      "permanent": true
     },
     {
-      "source": "/3d/playbook",
-      "destination": "/os/3d/playbook/",
-      "permanent": false
+      "source": "/3d/:path*",
+      "destination": "https://dev.rishit.site",
+      "permanent": true
     },
     {
       "source": "/index.html",
@@ -118,15 +123,6 @@
         {
           "key": "Content-Disposition",
           "value": "inline"
-        }
-      ]
-    },
-    {
-      "source": "/os(.*)",
-      "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "noindex, follow"
         }
       ]
     }

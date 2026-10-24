@@ -17,7 +17,7 @@ export default function Footer() {
       </div>
       <div className="foot-meta">
         <p>built by hand in vite + react + r3f + gsap + lenis + matter. no template was harmed.</p>
-        <p className="build">build <code>{__BUILD_HASH__}</code> · deployed {fmt(m)} · <a href="https://rishit.site" target="_blank" rel="noreferrer">rishit.site (the hub)</a> · <a href="/os/">old site (/os)</a> · <a href={'mailto:' + ME.email}>{ME.email}</a></p>
+        <p className="build">build <code>{__BUILD_HASH__}</code> · deployed {fmt(m)} · <a href="https://rishit.site" target="_blank" rel="noreferrer">rishit.site (the hub)</a> · <a href="https://dev.rishit.site" target="_blank" rel="noreferrer">old portfolio</a> · <a href={'mailto:' + ME.email}>{ME.email}</a></p>
         <p className="todo">// TODO: sleep</p>
       </div>
     </footer>

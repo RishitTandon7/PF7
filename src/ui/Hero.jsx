@@ -226,7 +226,7 @@ export default function Hero() {
           <h1 className="kicker">Rishit Tandon — AI/ML Engineer &amp; Full-Stack Developer</h1>
           <p className="kicker2">final-year cse · srm ist · student convenor, robofest 2.0</p>
           <Headline ready={phase === 'desk'} />
-          <p className="lede">i build robots, ai glasses, a wheelchair you steer with your brain, and a drone swarm with names. no templates allowed. <span className="mark">feel free to break things</span> — that's what hackers do.</p>
+          <p className="lede">i build robots, ai glasses, a rover you steer with your brain, and a drone swarm with names. no templates allowed. <span className="mark">feel free to break things</span> — that's what hackers do.</p>
           <div className="stats">
             <Stat n={gh?.total} label="contributions this year" />
             <Stat n={gh?.user.public_repos} label={gh && !gh.live ? 'public repos (snapshot)' : 'public repos'} />

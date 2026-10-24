@@ -202,7 +202,7 @@ ${projectLinks(PROJECTS)}
 <p>I have 12+ hackathon and expo wins, six of them first places.</p>
 ${winsHtml()}
 <h2>Open source</h2>
-<p>I have 100+ public repositories on <a href="${LINKS.github}" rel="me">GitHub</a> and ${CONTRIB}. The portfolio's GitHub world reads that data live.</p>
+<p>I have 100+ repositories on <a href="${LINKS.github}" rel="me">GitHub</a> and ${CONTRIB}. The portfolio's GitHub world reads that data live.</p>
 <h2>Looking for</h2>
 <p>I am ${AVAIL}, meaning software development engineer (SDE) and AI/ML engineer roles. If you are building with AI agents, computer vision, robotics or full-stack products, I would like to hear from you.</p>
 <h2>Contact</h2>
@@ -279,16 +279,16 @@ function home() {
     .replace(/<link rel="icon" href="data:[^>]*>/, '')
     .replace('<!--SEO_HEAD-->', head({ ...HOME, kind: 'home' }) + '\n    ' + homeLd())
   const fallback = `<div class="ssr"><h1>${esc(HOME.h1)}</h1><p>${esc(INTRO)}</p><nav aria-label="Main"><a href="/about">About</a> · <a href="/skills">Skills</a> · <a href="/#projects">Projects</a> · <a href="${LINKS.github}">GitHub</a> · <a href="${LINKS.linkedin}">LinkedIn</a></nav></div>`
-  const sections = `<div id="seo-home" role="region" aria-label="About Rishit Tandon, in plain text">
+  const sections = `<section id="text-version"><details><summary>$ cat readme.txt  (plain text version for screen readers, search engines and the curious)</summary>
 ${win('about.md', `<h2>About Rishit Tandon</h2><p>${esc(INTRO)} <a href="/about">Read the full story</a>.</p><p class="v">that is the plain version. the fun version is everything above this.</p>${badges()}`, 'about')}
 ${win('skills.json', `<h2>Skills</h2><div class="cols">${skillsHtml()}</div><p class="v">i pick the tool that fits the job, not the one with the nicest logo. <a href="/skills">all skills, and where each one shows up</a></p>`, 'skills')}
-${win('projects.log', `<h2>Projects</h2>${projectLinks(PROJECTS)}<p class="v">nine of them have their own page. there are 100+ public repos on github in various states of finished.</p>`, 'projects')}
+${win('projects.log', `<h2>Projects</h2>${projectLinks(PROJECTS)}<p class="v">nine of them have their own page. there are 100+ repos on github in various states of finished.</p>`, 'projects')}
 ${win('wins.txt', `<h2>Hackathon wins and achievements</h2><p>12+ hackathon and expo wins, 6 of them first places.</p>${winsHtml()}<p class="v">yes, i keep count.</p>`, 'wins')}
 ${win('research.md', `<h2>Research</h2><p>Research intern at SRM IST with NIDM (India's National Institute of Disaster Management): a machine learning early-warning pipeline for glacial lake outburst floods in the Upper Tista Basin, with alert latency cut by 40%. <a href="/projects/glof-early-warning">Read the project</a>.</p><p class="v">the guided version, with a globe and a lake, is in mission_ctrl.</p>`, 'research')}
 ${win('experience.log', `<h2>Experience</h2>${li(['Research intern, SRM IST × NIDM (GLOF early warning, Upper Tista Basin).', 'Student convenor, RoboFest 2.0, one of the biggest international events at SRM; built the judging, attendance and seat-allocation portal.', 'Technical lead, Intelligent System Design (ISD) Lab, SRM IST.'])}`, 'experience')}
 ${win('faq.txt', `<h2>Frequently asked questions</h2>${faqHtml()}`, 'faq')}
 ${win('contact.sh', `<h2>Contact Rishit Tandon</h2><p>Email <a href="mailto:${LINKS.email}">${LINKS.email}</a> · <a href="${LINKS.github}" rel="me">GitHub</a> · <a href="${LINKS.linkedin}" rel="me">LinkedIn</a> · <a href="${LINKS.hub}" rel="me">rishit.site</a></p><p class="v">${esc(AVAIL[0].toUpperCase() + AVAIL.slice(1))}. read <a href="/how-its-built">how this portfolio is built</a> or the <a href="/portfolio-design-tips">design tips</a>.</p>`, 'contact')}
-</div>`
+</details></section>`
   if (!html.includes('<div id="root"></div>')) throw new Error('root marker missing in dist/index.html')
   html = html.replace('<div id="root"></div>', `<div id="root">${fallback}</div>\n    ${sections}`)
   stats['/'] = words(fallback + sections)
@@ -308,6 +308,7 @@ function files() {
     `- [About](${SITE}/about): background, education, research, leadership, achievements`,
     `- [Skills](${SITE}/skills): AI/ML, full-stack, embedded and robotics skills`,
     `- [How this portfolio is built](${SITE}/how-its-built): case study of the OS-style interactive portfolio: concept, React/Three.js/GSAP stack, performance, easter eggs, before and after`,
+    `- [Old portfolio](https://dev.rishit.site): the previous version of this portfolio, kept online`,
     `- [Portfolio design tips](${SITE}/portfolio-design-tips): ten practical tips for a developer portfolio that does not look like a template`,
     ...(TEMPLATE_REPO ? [`- [Portfolio template (open source)](${TEMPLATE_REPO}): the template behind this site`] : []), '',
     '## Projects',
@@ -323,7 +324,7 @@ function files() {
     '## Projects', '',
     ...PROJECTS.flatMap((p) => [`### ${p.name} — ${p.tag}`, `${p.problem.join(' ')} ${p.approach.join(' ')} Results: ${p.results.join(' ')} Stack: ${p.stack.join(', ')}.${p.links.length ? ' Links: ' + p.links.map((l) => `${l.t} ${l.u}`).join('; ') + '.' : ''} Page: ${projectUrl(p)}`, '']),
     '## FAQ', '', ...FAQ.flatMap(([q, a]) => [`**${q}**`, a, '']),
-    '## Contact', `Email ${LINKS.email}. GitHub ${LINKS.github}. LinkedIn ${LINKS.linkedin}. Hub ${LINKS.hub}.`, '',
+    '## Contact', `Email ${LINKS.email}. GitHub ${LINKS.github}. LinkedIn ${LINKS.linkedin}. Hub ${LINKS.hub}. Old portfolio: https://dev.rishit.site.`, '',
   ]))
   write('humans.txt', `/* TEAM */\nBuilder: ${NAME}\nContact: ${LINKS.email}\nFrom: Chennai, India\n\n/* SITE */\nLast update: ${today}\nStandards: HTML5, CSS3, JSON-LD (schema.org)\nComponents: React, Three.js, GSAP, Lenis, Matter.js, Vite\n`)
 }

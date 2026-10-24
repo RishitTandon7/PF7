@@ -12,7 +12,7 @@ export const LINKS = {
 export const CAMPUS = 'SRM Institute of Science and Technology, Kattankulathur'
 export const AVAIL = 'open to internships now and full-time SDE / AI/ML engineer roles from 2027'
 export const CONTRIB = '9,000+ contributions in 2026' // static phrasing for json-ld and llms.txt (the live count is only on the page itself)
-export const INTRO = `I am Rishit Tandon, a final-year B.Tech computer science student at ${CAMPUS} (Chennai), graduating in 2027. I build AI agents, autonomous drones, smart glasses, hardware with Arduino and ESP32, and full-stack products. I have 12+ hackathon wins, 6 of them first places, and 100+ public GitHub repositories. I am ${AVAIL}.`
+export const INTRO = `I am Rishit Tandon, a final-year B.Tech computer science student at ${CAMPUS} (Chennai), graduating in 2027. I build AI agents, autonomous drones, smart glasses, hardware with Arduino and ESP32, and full-stack products. I have 12+ hackathon wins, 6 of them first places, and 100+ repositories. I am ${AVAIL}.`
 
 // set to the repo url once the template is public; the badge and the sitemap/llms mention stay hidden while this is ''
 export const TEMPLATE_REPO = ''
@@ -219,23 +219,24 @@ export const PROJECTS = [
   {
     slug: 'neurovibe-bci', name: 'NeuroVibe BCI Rover', tag: 'Brain-computer interface rover',
     title: 'NeuroVibe: Brain-Computer Interface (BCI) Rover | Rishit Tandon',
-    desc: 'NeuroVibe is a brain-computer interface rover steered by EEG signals, built by Rishit Tandon. Video demo, source code and the idea behind it.',
-    short: 'A brain-computer interface rover steered by EEG signals.',
+    desc: 'NeuroVibe is a brain-computer interface rover: EEG decoded by a 1D CNN on a Raspberry Pi, driven by an ESP32. Built by Rishit Tandon, with a video demo.',
+    short: 'A brain-computer interface rover: EEG decoded by a 1D CNN on a Raspberry Pi, with an ESP32 and BioAmp EXG hardware.',
     kw: 'brain-computer interface projects',
     problem: [
       'A normal joystick or steering wheel is no use to someone who cannot use their hands. A brain-computer interface, or BCI, reads signals from the brain and turns them into commands, which opens up control without any movement at all.',
     ],
     approach: [
-      'NeuroVibe is a BCI rover. EEG signals from the head are read, an intention such as left, forward, right or stop is classified from them, and a command goes to the motors. In other words, it moves when you think at it. Rishit has also published a related wheelchair repository, NeuroVibe-Wheelchair, that applies the same idea to mobility.',
+      'NeuroVibe is a BCI rover. EEG is picked up with BioAmp EXG biosignal hardware and decoded by a 1D convolutional neural network (a 1D CNN) running on a Raspberry Pi, and the result drives the rover through an ESP32. In other words, it moves when you think at it.',
+      'An earlier version of the project steered a wheelchair; that work is published as the NeuroVibe-Wheelchair repository.',
       'The portfolio shows the idea with a particle brain and live EEG traces, and links a video demo of the real project.',
     ],
     results: [
       'A working BCI-controlled rover with a recorded video demo.',
-      'A concept that extends to assistive mobility.',
+      'A concept that extends to assistive mobility, as the earlier wheelchair version showed.',
     ],
-    stack: ['EEG signal processing', 'Brain-computer interface', 'Arduino/ESP32 hardware', 'C++'],
+    stack: ['EEG signal processing', '1D CNN', 'Raspberry Pi', 'ESP32', 'BioAmp EXG'],
     links: [{ t: 'NeuroVibe on GitHub', u: 'https://github.com/RishitTandon7/NeuroVibe' }, { t: 'NeuroVibe-Wheelchair on GitHub', u: 'https://github.com/RishitTandon7/NeuroVibe-Wheelchair' }, { t: 'Video demo', u: 'https://drive.google.com/file/d/1Srq_t-Rbzm9CPYDdRB-g8Yhbs1Diwa6S/view' }],
-    todo: 'EEG headset, classifier and accuracy, command latency, the rover vs wheelchair relationship (the portfolio previously called it a BCI wheelchair), photos',
+    todo: 'classifier accuracy and the classes it decodes, command latency, electrode placement, photos',
     related: ['aisgr-smart-glasses', 'arclyth', 'slam-drone'],
     about: 'NeuroVibe, a brain-computer interface rover controlled by EEG signals.',
   },
@@ -283,7 +284,7 @@ export const SKILL_GROUPS = [
   { g: 'AI / ML', items: ['LLM agents and tool use', 'RAG (retrieval-augmented generation), including hybrid RAG', 'Computer vision and OCR', 'Knowledge graphs', 'Machine learning pipelines', 'Python'] },
   { g: 'Full-Stack', items: ['React', 'Next.js', 'TypeScript and JavaScript', 'Progressive web apps (PWAs)', 'HTML and CSS', 'Java, C++, Dart and PHP in smaller projects'] },
   { g: 'Embedded / Hardware', items: ['Arduino', 'ESP32 and IoT', 'Drones and autonomous flight', 'SLAM', 'Brain-computer interfaces (EEG)', 'Smart glasses hardware'] },
-  { g: 'Tools', items: ['Git and GitHub (100+ public repositories)', 'Three.js and React Three Fiber', 'GSAP', 'Vite', 'Blender'] },
+  { g: 'Tools', items: ['Git and GitHub (100+ repositories)', 'Three.js and React Three Fiber', 'GSAP', 'Vite', 'Blender'] },
 ]
 
 export const FAQ = [

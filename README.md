@@ -12,7 +12,7 @@ npm run snapshot   # refresh the offline github fallback (src/data/snapshot.json
 ## things only you can fill in
 - `public/resume.pdf` — the resume path. change `ME.resume` in `content.js` if the old site used another name.
 - `public/certificates/cert_1.jpg … cert_40.jpg` — until they exist the museum shows drawn placeholders.
-- `public/os/` — the old site. right now it's a stub `index.html`; copy the old build over it.
+- the old site now lives at https://dev.rishit.site (`/os` redirects there).
 - project blurbs in `content.js` (problem / built / impact) were written from repo names. fix whatever i guessed.
 
 ## how it hangs together

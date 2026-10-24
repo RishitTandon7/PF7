@@ -77,3 +77,9 @@ Open each page's source and search `TODO(rishit)`, or edit `seo/data.mjs` (the `
 - `www.portfolio.rishit.site` → 301 to the apex (rule in `vercel.json`; it only matters if you add that domain in Vercel). http → https is automatic on Vercel.
 - Trailing-slash duplicates (`/about/`): **no redirect rule**. A source rule for `/about/` risks a redirect loop on Vercel (it ignores the trailing slash when matching), so the canonical tag on every page handles it. Revisit only if Search Console shows duplicates.
 - The old site `/os/` (and `/os/3d`, `/os/3d/playbook`) is `noindex, follow` with the canonical pointing at the homepage, both as a meta tag and an `X-Robots-Tag` header. It is not blocked in robots.txt, because a blocked page can't be crawled to see its noindex.
+
+## 8. Update (old site moved, text version, NeuroVibe)
+- The old portfolio is **gone from this repo**. `vercel.json` 301-redirects `/os`, `/os/*`, `/3d` and `/3d/*` to https://dev.rishit.site. Point `dev.rishit.site` at the old build in Vercel (and give it its own `noindex`/canonical if you don't want it competing). This supersedes the "old site is noindex" note in section 7.
+- The plain-text windows now sit in one closed `<details id="text-version">` at the very end of the page (terminal command: `readme`). The content is server-rendered HTML; nothing is hidden with CSS.
+- NeuroVibe is now described as the current rover (BioAmp EXG, 1D CNN on a Raspberry Pi, ESP32) with one sentence about the earlier wheelchair version. Still unknown, so only in page-source comments: classifier accuracy and classes, latency, electrode placement, photos. The role split between the Pi and the ESP32 is not stated on the site.
+- "100+ public ..." no longer appears anywhere (the checker fails the build output if it does). The live GitHub numbers in the hero/forge/terminal stay labelled "public repos".

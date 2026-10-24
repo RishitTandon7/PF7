@@ -51,3 +51,6 @@ Kattankulathur spelling · NeuroVibe "rover" vs "wheelchair" · 58-char home tit
 - New pages: `/how-its-built` (1,700+ words, Article + HowTo, 6 real screenshots from `scripts/built-shots.mjs`) and `/portfolio-design-tips` (10 tips, Article + FAQPage). Both prerendered, in the sitemap and llms.txt, own OG image, link to home and projects.
 - Project pages are never padded: the 300-word target is now a note, not a failure (all nine are still 300+).
 - Home measured: perf 93, a11y/bp/seo 100. New pages 100 ×4. `seo-verify`: 956 checks.
+
+## Round 3
+Old site removed (301 to dev.rishit.site), "100+ public" → "100+ repositories" with a checker guard, text windows moved into a closed `<details id="text-version">` at the page end plus a `readme` terminal command, NeuroVibe rewritten as the current rover. `seo-verify`: 1,024 checks. Home Lighthouse mobile: 93 / 100 / 100 / 100.
