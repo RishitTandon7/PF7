@@ -1,0 +1,28 @@
+/* styles for the generated static pages (about, skills, projects, how-its-built, 404). tiny on purpose: no js, no web-font blocking. */
+*,*::before,*::after{box-sizing:border-box}
+html{background:#0b0b0c;-webkit-text-size-adjust:100%}
+body{margin:0;background:#0b0b0c;color:#d8d0bd;font:15px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+a{color:#ffb000;text-underline-offset:3px}
+a:hover{color:#ffd166}
+.top{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;padding:14px 5vw;border-bottom:1px solid #26231d;background:#0b0b0c;position:sticky;top:0}
+.brand{font-weight:800;color:#ffb000;text-decoration:none}
+.top nav{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
+.top nav a{color:#d8d0bd;text-decoration:none}
+.top nav a:hover{color:#ffb000}
+main{max-width:860px;margin:0 auto;padding:36px 5vw 70px}
+h1{font-size:clamp(28px,5vw,48px);line-height:1.08;letter-spacing:-.04em;color:#f2ecdf;margin:10px 0 14px}
+h2{font-size:clamp(19px,3vw,26px);color:#f2ecdf;margin:34px 0 8px;letter-spacing:-.02em;padding-top:6px;border-top:1px dashed #26231d}
+h3{font-size:14px;color:#39d353;margin:18px 0 4px;text-transform:uppercase;letter-spacing:.08em}
+.lead{font-size:17px;color:#e6dfcc;max-width:64ch}
+.crumbs{font-size:12px;color:#8c8574}
+.crumbs a{color:#a39b86}
+figure{margin:22px 0}
+figure img{display:block;width:100%;height:auto;border:2px solid #f2ecdf;box-shadow:6px 6px 0 #000;background:#14110d}
+ul{padding-left:22px}
+li{margin:5px 0}
+code{background:#1d1912;padding:1px 6px}
+.faq dt{color:#f2ecdf;font-weight:700;margin-top:16px}
+.faq dd{margin:2px 0 0}
+.foot{max-width:860px;margin:0 auto;padding:30px 5vw 60px;border-top:2px dashed #26231d;font-size:13px;color:#a39b86}
+.foot a{color:#f2ecdf}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}

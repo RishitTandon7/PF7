@@ -11,6 +11,7 @@ export default defineConfig({
   define: { __BUILD_HASH__: JSON.stringify(hash), __BUILD_TIME__: JSON.stringify(now.toISOString()) },
   build: {
     chunkSizeWarningLimit: 1200,
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: (id) => {

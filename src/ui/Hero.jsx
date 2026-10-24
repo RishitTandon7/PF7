@@ -122,7 +122,7 @@ function Headline({ ready }) {
   }, vis)
 
   return (
-    <h1 className="headline" ref={root} aria-label="i write code that writes code, build robots, and win hackathons.">
+    <p className="headline" ref={root} aria-label="i write code that writes code, build robots, and win hackathons.">
       {HEAD.map((line, li) => (
         <span className="hl" key={li} aria-hidden>
           {line.join(' ').split(' ').map((w, wi) => (
@@ -130,7 +130,7 @@ function Headline({ ready }) {
           ))}
         </span>
       ))}
-    </h1>
+    </p>
   )
 }
 
@@ -203,7 +203,8 @@ export default function Hero() {
         </div>
 
         <div className="desk-main">
-          <p className="kicker">rishit tandon · final-year cse · srm ist · student convenor, robofest 2.0</p>
+          <h1 className="kicker">Rishit Tandon — AI/ML Engineer &amp; Full-Stack Developer</h1>
+          <p className="kicker2">final-year cse · srm ist · student convenor, robofest 2.0</p>
           <Headline ready={phase === 'desk'} />
           <p className="lede">i build robots, ai glasses, a wheelchair you steer with your brain, and a drone swarm with names. no templates allowed. <span className="mark">feel free to break things</span> — that's what hackers do.</p>
           <div className="stats">

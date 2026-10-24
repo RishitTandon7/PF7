@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/seo-build.mjs",
     "preview": "vite preview",
     "snapshot": "node scripts/snapshot.mjs",
     "shots": "node scripts/shots.mjs shots",
-    "e2e": "node scripts/e2e.mjs e2e"
+    "e2e": "node scripts/e2e.mjs e2e",
+    "og": "node scripts/og.mjs",
+    "lighthouse": "node scripts/lh.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
