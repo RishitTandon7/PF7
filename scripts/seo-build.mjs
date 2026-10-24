@@ -46,9 +46,8 @@ function head(pg) {
     <meta name="twitter:description" content="${esc(pg.desc)}" />
     <meta name="twitter:image" content="${img}" />
     <meta name="twitter:image:alt" content="${esc(pg.h1)} — ${NAME}" />
-    <!-- search console / bing verification: paste your tags here once you have them (see SEO_TODO.md)
-    <meta name="google-site-verification" content="TODO(rishit)" />
-    <meta name="msvalidate.01" content="TODO(rishit)" /> -->
+    ${isHome ? `<meta name="google-site-verification" content="9RZWFfbKbt_VfXhatXDDBvK7jhRCqkVQawYc3SHBPwU" />
+    ` : ''}<!-- bing: paste <meta name="msvalidate.01" content="..." /> here once you have it (see SEO_TODO.md) -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />

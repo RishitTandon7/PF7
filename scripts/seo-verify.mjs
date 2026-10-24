@@ -93,6 +93,8 @@ for (const [path, h] of [['/how-its-built', built], ['/portfolio-design-tips', t
   ok(llmsTxt.includes('](' + SITE + path + ')'), path + ' listed in llms.txt')
 }
 // old site is gone: no /os in dist, no links to it, redirect lives in vercel.json, the new home is dev.rishit.site
+// google search console verification: permanent, in the raw head of the homepage, before <body>
+ok(/<head>[\s\S]*<meta name="google-site-verification" content="9RZWFfbKbt_VfXhatXDDBvK7jhRCqkVQawYc3SHBPwU" \/>[\s\S]*<\/head>\s*<body/.test(home), 'google-site-verification tag missing from the homepage head')
 ok(!existsSync(new URL('os/', DIST)), 'dist/os must not exist')
 for (const f of ['index.html', 'how-its-built/index.html', 'llms.txt', 'llms-full.txt', 'sitemap.xml']) ok(!/(href="|\]\()\/os\b|portfolio\.rishit\.site\/os\b/.test(rdf(f)), f + ' links to /os')
 ok(built.includes('href="https://dev.rishit.site"') && llmsTxt.includes('https://dev.rishit.site'), 'old portfolio links to dev.rishit.site')

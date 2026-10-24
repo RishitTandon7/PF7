@@ -9,7 +9,7 @@ Everything below needs your accounts, your decisions, or facts I don't have. Cod
 - [ ] In Vercel → Analytics, make sure Web Analytics is enabled (the script is already on every page, but only loads on `*.rishit.site` / `*.vercel.app`).
 
 ## 1. Search Console + Bing (the single most important step)
-- [ ] Google Search Console → add property `https://portfolio.rishit.site` (URL-prefix is fine). Choose the **HTML tag** method, copy the `<meta name="google-site-verification" ...>` tag.
+- [ ] Google Search Console → add property `https://portfolio.rishit.site` (URL-prefix is fine). **Done:** the Google verification tag is live in the homepage head (kept permanently; the checker fails if it goes missing). Just click Verify.
 - [ ] Paste it into `scripts/seo-build.mjs`, in the `head()` function, replacing the commented placeholder (and the Bing `msvalidate.01` tag the same way), then redeploy and click Verify.
 - [ ] Submit `https://portfolio.rishit.site/sitemap.xml` in Search Console and in Bing Webmaster Tools (Bing can import straight from Search Console).
 - [ ] **Request Indexing** (URL Inspection → Request indexing) for the homepage and each of these:
