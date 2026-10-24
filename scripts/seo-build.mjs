@@ -122,7 +122,7 @@ function shell(pg, bodyHtml, jsonld, { preload } = {}) {
 ${bodyHtml}
     </main>
     ${footer()}
-    <script defer src="/_vercel/insights/script.js"></script>
+    <script>if(/(^|.)(rishit.site|vercel.app)$/.test(location.hostname)){var s=document.createElement('script');s.defer=true;s.src='/_vercel/insights/script.js';document.body.appendChild(s)}</script>
   </body>
 </html>
 `
@@ -130,7 +130,7 @@ ${bodyHtml}
 
 /* -------------------------------------------------------------- the pages */
 const winsHtml = () => `<ul><li><strong>6 first places:</strong> ${WINS.first.join(', ')}.</li><li><strong>2 second places:</strong> ${WINS.second.join(', ')}.</li><li><strong>Other podiums and finals:</strong> ${WINS.other.join(', ')}.</li></ul>`
-const skillsHtml = () => SKILL_GROUPS.map((s) => `<h3>${esc(s.g)}</h3>${li(s.items.map(esc))}`).join('')
+const skillsHtml = () => SKILL_GROUPS.map((s) => `<div class="grp"><h3>${esc(s.g)}</h3>${li(s.items.map(esc))}</div>`).join('')
 const faqHtml = () => `<dl class="faq">${FAQ.map(([q, a]) => `<dt>${esc(q)}</dt><dd>${esc(a)}</dd>`).join('')}</dl>`
 
 function projectPage(p) {
@@ -200,6 +200,7 @@ function skillsPage() {
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span>Skills</span></nav>
 <h1>${SKILLS.h1}</h1>
 <p class="lead">The tools I use across AI and machine learning, full-stack web, embedded hardware and robotics, grouped by area, with the projects where each one shows up.</p>
+<h2>Skills by area</h2>
 ${skillsHtml()}
 <h2>Where these skills show up</h2>
 ${li([

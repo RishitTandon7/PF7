@@ -10,13 +10,14 @@
     "cls": "0.335"
   },
   "after": {
-    "performance": 99,
+    "performance": "94–95",
     "accessibility": 100,
     "best-practices": 100,
     "seo": 100,
-    "lcp": "1.2 s",
-    "fcp": "0.8 s",
-    "tbt": "30 ms",
-    "cls": "0.065"
+    "lcp": "2.6 s",
+    "fcp": "1.5 s",
+    "tbt": "20–90 ms",
+    "cls": "0.065",
+    "note": "homepage, mobile emulation, simulated slow-4G + 4x cpu, served by a plain static file server. static pages score 100/100/100/100."
   }
 }

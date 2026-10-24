@@ -21,3 +21,25 @@
 
 ## Phases (one commit each)
 audit → meta → structured data → static files → pages/content → performance → technical SEO → verification
+
+## Results (after)
+| | before | after |
+|---|---|---|
+| Lighthouse mobile, homepage: performance | 50 | **94–95** (98–99 under `vite preview`) |
+| accessibility | 95 | **100** |
+| best practices | 96 | **100** |
+| seo | 91 | **100** |
+| LCP / FCP | 4.6 s / 4.3 s | 2.6 s / 1.5 s |
+| CLS | 0.335 | 0.065 |
+| TBT | 170 ms | 20–90 ms |
+| static pages (`/about`, `/skills`, `/how-its-built`, `/projects/*`): all four | n/a (did not exist) | **100 / 100 / 100 / 100** |
+| raw html a crawler sees at `/` | empty `<div id="root">` | title, meta, JSON-LD graph, h1, intro and 8 text sections |
+
+Verification: `node scripts/seo-verify.mjs [base-url]` runs 785 checks (title/description lengths and uniqueness, canonical, robots meta, OG/Twitter tags and image files, one h1 per page, img alt + dimensions, JSON-LD parse + required fields per type, visible FAQ == schema word for word, internal links resolve, 300+ words per project page, 400+ on /about, robots.txt bots, sitemap urls, llms files, manifest icons). It passes against `dist/` and over HTTP against a static server.
+
+## Things tried and rolled back
+- Lazy-loading lenis + scrolltrigger after first paint: homepage score went *down* a point or two (the work just moved into the measurement window) and it broke the "crash → reboot" flow. Reverted.
+- Manual vendor chunks for react / three: put react's runtime inside the 3d chunk, so the entry downloaded ~1 MB of three.js. Removed; the bundler's own splitting along lazy imports is correct.
+
+## Judgment calls (also in SEO_TODO.md)
+Kattankulathur spelling · NeuroVibe "rover" vs "wheelchair" · 58-char home title · AgentHub vs Agent Marketplace · no DGTL mention · SplitFair links to a GitHub search · `vite preview` can't serve the static pages (it falls back to the SPA), so verification uses a static file server.

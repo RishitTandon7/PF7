@@ -251,7 +251,7 @@ export const SKILLS = {
 }
 export const BUILT = {
   path: '/how-its-built',
-  title: 'How This Portfolio Is Built | Interactive Developer Portfolio Website',
+  title: 'How This Interactive Portfolio Website Is Built | Rishit Tandon',
   desc: 'How Rishit Tandon built an interactive 3D developer portfolio website: React, Three.js, GSAP, lazy-loaded worlds and a measured Lighthouse score.',
   h1: 'How this portfolio is built',
   og: '/og/how-its-built.png',
